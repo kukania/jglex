@@ -1,0 +1,84 @@
+<div class="title">
+  				<button onclick="#" style="float:left">
+  					<img class="fs_btn" src="./resources/icon_back.png" />
+  				</button>
+  				<button onclick="off_window('recommend')" style="float:right">
+  					<img class="fs_btn" src="./resources/icon_close.png" />
+  				</button>
+  			</div>
+
+<div class="body">
+				<h3 class="fs_prompt">인원수를 입력해주세요</h3>
+				<form id="hc_form">
+  				<article class="hc_item">
+  					<label for="hc_male">
+	  					<h4>성인 남성</h4>
+	  					<img class="fs_icon" src="./resources/icon_male.png" />
+	  					<input type="text"name="hc_male"
+	  						 pattern="\d*" maxlength="2" size="1" value="0">
+	  					<span>명</span>
+  					</label>
+  				</article>
+  				<article class="hc_item">
+  					<h4>성인 여성</h4>
+  					<img class="fs_icon" src="./resources/icon_female.png" />
+  					<input type="text" name="hc_female"
+  						 pattern="\d*" maxlength="2" size="1" value="0">
+  					<span>명</span>
+  				</article>
+  				<article class="hc_item">
+  					<h4>어린이</h4>
+  					<img class="fs_icon" src="./resources/icon_kid.png" />
+  					<input type="text" name="hc_kid"
+  						 pattern="\d*" maxlength="2" size="1" value="0">
+  					<span>명</span>
+  				</article>
+  				</form>
+  			</div>
+  			<div class="foot">
+  				<button onclick="send_hc(); change_page('sl')">
+  					<span>검색</span>
+  					<img src="./resources/icon_search.png">
+  				</button>
+  			</div>
+  				
+<div class="body">
+  				<h3 class="fs_prompt">추천된 메뉴 구성입니다</h3>
+  				<article class="sl_item" onclick="change_page('cf'); set_info(this)">
+  					<h4 class="sl_name">어쩌고 세트</h4>
+  					<span class="sl_price">20,000원</span>
+  					<span class="sl_comp">좋은 날엔 닭갈비 2인분 소주 1병</span>
+  					<span class="sl_msg">연인에게 추천! 개꿀조합!</span>
+  				</article>
+  				<article class="sl_item" onclick="change_page('cf'); set_info(this)">
+  					<h4 class="sl_name">어쩌고 세트</h4>
+  					<span class="sl_price">20,000원</span>
+  					<span class="sl_comp">좋은 날엔 닭갈비 2인분 소주 1병</span>
+  					<span class="sl_msg">연인에게 추천! 개꿀조합!</span>
+  				</article>
+  				<article class="sl_item" onclick="change_page('cf'); set_info(this)">
+  					<h4 class="sl_name">어쩌고 세트</h4>
+  					<span class="sl_price">20,000원</span>
+  					<span class="sl_comp">좋은 날엔 닭갈비 2인분 소주 1병</span>
+  					<span class="sl_msg">연인에게 추천! 개꿀조합!</span>
+  				</article>
+  			</div>
+  			
+<div class="body">
+  				<h3 class="fs_prompt">장바구니에 넣기</h3>
+  				<article class="info">
+  					<h4 class="if_name">어쩌고 세트</h4>
+  					<span class="if_price">20,000원</span>
+  					<span class="if_comp">좋은 날엔 닭갈비 2인분 소주 1병</span>
+  					<span class="if_msg">연인에게 추천! 개꿀조합!</span>
+  				</article>
+  			</div>
+  			<div class="foot">
+  				<h3 class="fs_prompt" style="margin-top:-114px;">장바구니에 넣으시겠습니까?</h3>
+  				<button onclick="off_window('recommend')">
+  					<span>확인</span>
+  					<img src="./resources/icon_check.png">
+  				</button>
+  			</div>
+  			
+<div class="inner" id="menu1"><a href="../Calculate3/imageFile"></a><div><img src="../Calculate3/imageFile/"></div><a href="../Calculate3/imageFile"></a><a href="../Calculate3/imageFile"></a><span class="txt"><span class="in">8500<br><input type="checkbox" name="menu" value="닭갈비+1" onclick="orderSet(this);">닭갈비+1</span></span></div>

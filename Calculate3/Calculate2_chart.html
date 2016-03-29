@@ -1,0 +1,286 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculating page</title>
+    <meta charset=utf-8>
+    <link rel="stylesheet" href="Calculate3.css">
+    <!-- script src load -->
+    <link rel="stylesheet" href="jquery-ui.css">
+    <script src="Chart.js"></script>
+    <script src="jquery-1.11.3.min.js"></script>
+    <script src="jquery-ui.js"></script>
+    <script src="showChart.js"></script>
+    <script src="./jspkg-archive/jquery.dynatable.js"></script>
+    <script>
+        Date.prototype.getWeek = function () {
+            var onejan = new Date(this.getFullYear(), 0, 1);
+            return Math.ceil((((this - onejan) / 86400000) + onejan.getDay() + 1) / 7);
+        }
+        var MenuName = {
+            menu1: "닭갈비 포장(생닭)",
+            menu2: "닭갈비 포장(조리된)",
+            menu3: "좋은 날엔 닭갈비",
+            menu4: "닭갈비+1",
+            menu5: "닭갈비 정식",
+            menu6: "허브 치킨가스",
+            menu7: "닭가슴살 냉채",
+            menu8: "어린이 치킨가스",
+            menu9: "모듬 사리",
+            menu10: "우동 사리",
+            menu11: "라면 사리",
+            menu12: "떡 사리",
+            menu13: "고구마 사리",
+            menu14: "볶음밥",
+            menu15: "공기밥",
+            menu16: "양배추 샐러드",
+            menu17: "소주/맥주",
+            menu18: "막걸리",
+            menu19: "청하",
+            menu20: "음료수"
+        };
+        var category = [[1, 8], [9, 13], [14, 16], [17, 20]];
+        var color_list = ["#7fa742", "#3a7a8f", "#d21125", "#d97545", "#f5ef52", "#763aaf", "#55e1c5", "#6e4d1f"];
+        window.onresize = function () {
+            var leftPos = 0;
+            var value = $("#tabHL").attr("value");
+            $(".tab").each(function (index, elem) {
+                if (index == value)
+                    leftPos = parseInt($(elem).offset().left) - 40;
+            });
+            $("#tabHL").attr("style", "margin-left:" + leftPos);
+        }
+        window.onload = function () {
+            var leftPos = 0;
+            $(".tab").each(function (index, elem) {
+                if (index == 1)
+                    leftPos = parseInt($(elem).offset().left) - 40;
+            })
+            $("#tabHL").attr("style", "margin-left:" + leftPos);
+            $("#datepicker").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                nextText: '다음 달',
+                prevText: '이전 달'
+            });
+            $("#datepicker2").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                nextText: '다음 달',
+                prevText: '이전 달'
+            });
+            $(".tab").click(function () {
+                $(".underline").animate({
+                    width: '0px'
+                }, { duration: 200, queue: false });
+                $(this).find(".underline").animate({
+                    width: '90px'
+                }, { duration: 200, queue: false });
+            });
+            $('#cat_esc').click(function () {
+                $('#category').css("width", "0px");
+                $('#category').css("border", "none");
+                $("#category").html("");
+            });
+            load_ctgrlist(0);
+        }
+        // new function setCanvas(canvasId)
+        function setCanvas(canvasId) {
+            $('.nodes').children().css('display', 'none');
+            $('#' + canvasId).css('display', 'block');
+            $('.canvasSelector').removeClass('selected');
+            $('#s_' + canvasId).addClass('selected');
+            if (parseInt($("#getBtn").attr("value")) == 0) {
+                $("#getBtn").attr("onclick", "drawSetting();");
+                $("#getBtn").attr("value", 1);
+            } else {
+                $("#getBtn").attr("onclick", "tableSetting();");
+                $("#getBtn").attr("value", 0);
+            }
+        }
+    </script>
+
+    <script>
+        function drawSetting2() {
+            var startDate = makeDateToString($("#datepicker").datepicker('getDate'));
+            var endDate = makeDateToString($("#datepicker2").datepicker('getDate'));
+            var inputOption = $("#value").val();
+            var inputOption2 = parseInt($("#optionHL").attr("value")) + 1;
+            var makeUrl = 'getCalculMargin.php?' + "date_from=" + startDate + "&date_to=" + endDate + "&charge=" + inputOption + "&option=" + inputOption2;
+            return makeUrl;
+        }
+        function sortTable() {
+            var elem = $("#testTable").children("tbody").children("tr");
+            var temp = elem;
+            elem.each(function (index, elem2) {
+                var numberOftable = parseInt($(elem2).children("td").eq(0).html());
+                for (var i = index + 1; i < elem.length ; i++) {
+                    var numberOftable2 = parseInt($(elem[i]).children("td").eq(0).html());
+                    if (numberOftable < numberOftable2) {
+                        var tempElem = $(elem[i]).html();
+                        $(elem[i]).html($(elem2).html());
+                        $(elem2).html(tempElem);
+                        numberOftable = parseInt($(elem2).children("td").eq(0).html());
+                        numberOftable2 = parseInt($(elem[i]).children("td").eq(0).html());
+                    }
+                }
+            });
+        }
+        function tableSetting() {
+            var getUrl = drawSetting2();
+            $.ajax({
+                type: "post",
+                url: getUrl,
+                dataType: "json",
+                success: function (data) {
+                    var myRecords = [];
+                    var temp = 0;
+                    for (var key in data) {
+                        if (temp == 0) {
+                            temp = parseInt(data[key].margin);
+                            data[key].etc = "-";
+                        }
+                        else {
+                            if (temp > parseInt(data[key].margin))
+                                data[key].etc = "▼";
+                            else if (temp < parseInt(data[key].margin))
+                                data[key].etc = "▲";
+                            else
+                                data[key].etc = "-";
+                            temp = parseInt(data[key].margin);
+                        }
+                        myRecords.push(data[key]);
+                    }
+                    $('#testTable').dynatable({
+                        table: {
+                            defaultColumnIdStyle: 'camelCase'
+                        },
+                        dataset: {
+                            perPageOptions: [],
+                            records: myRecords
+                        },
+                        features: {
+                            paginate: false,
+                            recordCount: false,
+                            sorting: false,
+                            search: false
+                        },
+                    });
+                    $("#testTable").data('dynatable').settings.dataset.originalRecords = myRecords;
+                    $("#testTable").data('dynatable').process();
+                    sortTable();
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <img src="./Resources/Title.png" alt="no image"
+             width="600px" height="90px">
+    </header>
+    <nav>
+        <div class="grid" id="nav_tab">
+            <!--CHANGED: tab > tab selected-->
+            <span class="tab selected" onclick="location.href='Calculate2_chart.html'">
+                CHART
+                <div class="underline"></div>
+            </span>
+            <span class="tab" onclick="location.href='Calculate2_admin.html'">
+                ADMIN
+                <div class="underline" style="width:90px"></div>
+            </span>
+        </div>
+    </nav>
+    <div id="mainContainner">
+        <!--CHANGED: div id="" > id = "option_layout"-->
+        <div id="option_layout">
+            <div id="option_window">
+                <div id="form_date">
+                    <input type="text" id="datepicker" value="date_from">
+                    <span>~</span>
+                    <input type="text" id="datepicker2" value="date_to">
+                    <button id="getBtn" onclick="drawSetting()" value="1">submit</button>
+                </div>
+            </div>
+        </div>
+        <article id="chart">
+            <div class="set_color2" id="optionHL" value="0"></div>
+            <!--CHANGED: delete 'grid_vertical' class(options grid_vertical > options)-->
+            <div class="options">
+                <!--CHANGED: delete 'set_color3' class-->
+                <!--CHANGED: add 'selected' class when selected-->
+                <div class="option selected"
+                     onclick="change_option(0)">
+                    <span class="flex_center">Daily</span>
+                </div>
+                <div class="option" onclick="change_option(1)">
+                    <span class="flex_center">Weekly</span>
+                </div>
+                <div class="option"
+                     onclick="change_option(2)">
+                    <span class="flex_center">Monthly</span>
+                </div>
+                <div class="option"
+                     onclick="change_option(3)">
+                    <span class="flex_center">Yealy</span>
+                </div>
+                <div class="option"
+                     onclick="change_option(4)">
+                    <span class="flex_center">Quarterly</span>
+                </div>
+            </div>
+            <div class="display" onload="drawFunction()">
+                <!--CHANGED: new div canvas tab & canvas selector-->
+                <!--CHANGED: new function setCanvas(canvasId)-->
+                <div id="canvasTab">
+                    <div class="canvasSelector selected" id="s_myChart"
+                         onclick="setCanvas('myChart')">Chart</div>
+                    <div class="canvasSelector" id="s_tableZone"
+                         onclick="setCanvas('tableZone')">Table</div>
+                </div>
+                <div class="nodes">
+                    <canvas id="myChart" width="800px" height="500px">
+                        Your browser does not support the HTML5 canvas tag.
+                    </canvas>
+                    <!--CHANGED: new div tableZone with table-->
+                    <div id="tableZone" style="display:none">
+                        <input type="number" id="value" placeholder="charge %" /><br />
+                        <table id="testTable">
+                            <thead>
+                                <tr>
+                                    <th>Num</th>
+                                    <th>Date</th>
+                                    <th>Sales</th>
+                                    <th>Margin</th>
+                                    <th>card</th>
+                                    <th>cash</th>
+                                    <th>cardMargin</th>
+                                    <th>cashMargin</th>
+                                    <th>etc</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="filters">
+                <div class="categorys">
+                    <div class="cat" onclick="load_ctgrlist(0)"
+                         style="border-left-color:#67ceab">닭요리</div>
+                    <div class="cat" onclick="load_ctgrlist(1)"
+                         style="border-left-color:#55bbbb">사리</div>
+                    <div class="cat" onclick="load_ctgrlist(2)"
+                         style="border-left-color:#fcb746">기타</div>
+                    <div class="cat" onclick="load_ctgrlist(3)"
+                         style="border-left-color:#ee4455">음료</div>
+                    <div class="cat" id="cat_esc"
+                         style="border-left-color:black">접기</div>
+                </div>
+                <div id="category">
+                </div>
+            </div>
+        </article>
+    </div>
+</body>
+
+</html>

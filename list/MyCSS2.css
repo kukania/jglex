@@ -1,0 +1,180 @@
+@charset "utf-8";
+/* CSS Document */
+
+body{
+    margin: 0;
+    padding: 0 0 1em 0;
+    font-size: 1em;
+    font-family: Arial;
+    background-color: #AAAAAA;
+    color: black;
+}
+
+* {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+    font-family: "나눔고딕", "맑은고딕";
+}
+
+div.wrap{
+    margin-bottom: 2.5em;
+}
+
+a{
+    text-decoration: none;
+    text-align: center;
+}
+a:hover p{
+    color: red;
+}
+p{
+    color: black;
+}
+
+
+#header{
+    width: 100%;
+    height: 150px;
+
+    background:black;
+    padding: 1em 0px;
+    color: white;
+    text-align:center;
+}
+#nav{
+    width: 100%;
+    background-color: #FEFEFF;
+    color: black;
+    padding: 0 0;
+    margin: 0 0;
+}
+#tab_list{
+    display: -webkit-flex;
+    display: flex;
+    padding: 0 0;
+    margin: 0 0;
+}
+#tab_list li.tab{
+    -webkit-flex: 1;
+    flex: 1;
+    padding: 0;
+    margin: 0;
+    //border: 1px solid green;
+    display: inline-block;
+}
+li.tab a{}
+li.tab a .selected{
+    background-color: red;
+
+    position: relative;
+    -webkit-flex: 1;
+    flex: 1;
+    height: 4px;
+}
+li.tab button{
+    width: 100%;
+    background-color: white;
+    margin: 0;
+    border: 0;
+    padding: 0;
+    font-size: 16px;
+}
+li.tab button .selected{
+    background-color: red;
+
+    position: relative;
+    -webkit-flex: 1;
+    flex: 1;
+    height: 4px;
+}
+
+.title{
+    padding:5px;
+    text-transform: capitalize;
+    font-family: Helvetica, Arial;
+}
+
+.list{
+    color:white;
+    text-align: center;
+}
+
+.container{
+    margin-top: 0 0 1em;
+    display: -webkit-flex;
+    display: flex;
+}
+
+div.thumbnail-area{
+    
+}
+section.list{
+    position: relative;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex: none;
+    flex: none;
+}
+
+div.inner{
+    margin: 4px 4px 8px;
+    overflow: hidden;
+
+    -webkit-flex: 1;
+    flex: 1;
+}
+
+div.inner div.img{
+    position: relative;
+    overflow: hidden;
+}
+div.inner div.img img{
+    width: 100%;
+}
+div.inner span.txt{
+    letter-spacing: -1px;
+    color: #202021;
+    font-size: 14px;
+    border-width: medium 1px 1px;
+    border-style: none solid solid;
+    border-color: -moz-use-text-color #E6E7E8 #E6E7E8;
+    -moz-border-top-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    border-image: none;
+    display: block;
+    box-sizing: border-box;
+    padding: 10px;
+    background: #FFF none repeat scroll 0% 0%;
+}
+div.inner span.txt span.in{
+    height: 72px;
+    overflow: hidden;
+    display: block;
+    line-height: 150%;
+    color: #444;
+}
+div.inner span.txt span.in p.name{
+    margin: 16px;
+    color: #004;
+    font-size: 32px;
+    font-weight: bold;
+}
+
+footer{
+    width: 100%;
+    background-color: #FEFEFF;
+
+    position: fixed;
+    bottom: 0;
+}
+.white-popup {
+  position: relative;
+  background: #FFF;
+  padding: 20px;
+  width:auto;
+  max-width: 500px;
+  margin: 20px auto;
+}

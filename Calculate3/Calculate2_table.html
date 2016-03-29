@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Calculating page</title>
+	<meta charset=utf-8>
+	<link rel="stylesheet" href="Calculate2.css">
+	<script src="Chart.js"></script>
+	<script src="jquery-1.11.3.min.js"></script>
+	<script src="./jspkg-archive/jquery.dynatable.js"></script>
+	<script>
+		// nav animation
+		$(document).ready(function(){
+			$(".tab").click(function(){
+				$(".underline").animate({
+					width: '0px'
+				}, { duration: 200, queue: false });
+				$(this).find(".underline").animate({
+					width: '90px'
+				}, { duration: 200, queue: false });
+			});			
+		});
+		// control window
+		function exit_window(name){
+			$('#'+name).animate(
+				{height: '0'}, 
+				{duration: 400,
+				complete: function(){
+				$('#'+name).css('display', 'none');
+				}
+			});
+		}
+		function open_window(name){
+			$('#'+name).css('display', 'block');
+			$('#'+name).animate(
+				{height: '600px'}, 
+				{duration: 400}
+			)
+			fillCalendar();
+		}
+		// make table info
+		var myRecords = [];
+		for(var i = 0; i < 12; i++){
+			myRecords.push({
+				num: i+1,
+				date: '2015-08-'+(30-i),
+				sales: 1000000,
+				cash: 500000,
+				card: 500000,
+				cashMargin: 500000,
+				cardMargin: 100000,
+				margin: 600000
+			});
+		}
+		$(document).ready(function(){
+			$('#myTable').dynatable({
+				table: {
+					defaultColumnIdStyle: 'camelCase'
+				},
+				dataset: {
+					records: myRecords
+				}
+			});
+			$('tr').click(open_window('getDaily'));
+		});
+		// make box_day info
+		var tsrc = '<span class="date">8/31</span>'+
+					'<span>Sales: 100000</span><br>'+
+					'<span>card: 1</span><br>'+
+					'<span>cash: 2</span><br>'+
+					'<span>Margin: 10000</span><br>';
+		var tday = '<div class="box_day">' + tsrc + '</div>';
+		var tweek = '<div class="box_week">' +
+					tday+tday+tday+tday+tday+tday+tday+
+					'</div>';
+		var tmonth = tweek + tweek + tweek + tweek + tweek;
+		function fillCalendar(){
+			$('#calendar').html(tmonth);
+		}
+	</script>
+</head>
+<body>
+	<nav>	
+		<div class="grid" id="nav_tab">
+			<span class="tab">CHART
+				<div class="underline"></div>
+			</span>
+			<span class="tab">TABLE
+				<div class="underline" style="width:90px"></div>
+			</span>
+			<span class="tab">ADMIN
+				<div class="underline"></div>
+			</span>
+		</div>
+	</nav>
+	
+	<header>
+		<img src="./Resources/Title.png" alt="no image"
+			width="600px" height="90px">
+	</header>
+	
+	<div style="display:block">
+		<div id="option_window">
+			<div id="form_date">
+				<input type="text" id="datepicker" value="date_from">
+				<span>~</span>
+				<input type="text" id="datepicker2" value="date_to">
+				<button onclick="test()">SUBMIT>></button>
+			</div>
+		</div>
+	</div>
+	
+	<article id="table">
+		<button onclick="open_window('getDaily');">btn</button>
+		<section id="testTable">
+			<table id="myTable">
+				<thead>
+					<tr>
+						<th>Num</th>
+						<th>Date</th>
+						<th>Sales</th>
+						<th>Cash</th>
+						<th>Card</th>						
+						<th>CashMargin</th>
+						<th>CardMargin</th>
+						<th>Margin</th>
+					</tr>
+				</thead>
+			</table>
+		</section>
+		<section id="getDaily" class="window"
+			style="display:none; height:0;">
+			<div class="title">
+				<span>Show you month infomation daily</span>
+				<button onclick='exit_window("getDaily")'>exit</button>
+				<button onclick="fillCalendar()">fill</button>
+			</div>
+			<div class="container" id="calendar">
+				<div class="box_week">
+					<div class="box_day">
+						<span class="date">8/31</span>
+						<span>Sales: 100000</span><br>
+						<span>card: 1</span><br>
+						<span>cash: 2</span><br>
+						<span>Margin: 10000</span><br>
+					</div>
+					<div class="box_day">
+						<span class="date">8/31</span>
+						<span>Sales: 100000</span><br>
+						<span>card: 1</span><br>
+						<span>cash: 2</span><br>
+						<span>Margin: 10000</span><br>
+					</div>
+					<div class="box_day">
+						<span class="date">8/31</span>
+						<span>Sales: 100000</span><br>
+						<span>card: 1</span><br>
+						<span>cash: 2</span><br>
+						<span>Margin: 10000</span><br>
+					</div>
+					<div class="box_day">
+						<span class="date">8/31</span>
+						<span>Sales: 100000</span><br>
+						<span>card: 1</span><br>
+						<span>cash: 2</span><br>
+						<span>Margin: 10000</span><br>
+					</div>
+				</div>
+				<div class="box_week">
+					<div class="box_day">
+						<span class="date">8/31</span>
+						<span>Sales: 100000</span><br>
+						<span>card: 1</span><br>
+						<span>cash: 2</span><br>
+						<span>Margin: 10000</span><br>
+					</div>
+					<div class="box_day">
+						<span class="date">8/31</span>
+						<span>Sales: 100000</span><br>
+						<span>card: 1</span><br>
+						<span>cash: 2</span><br>
+						<span>Margin: 10000</span><br>
+					</div>
+					<div class="box_day">
+						<span class="date">8/31</span>
+						<span>Sales: 100000</span><br>
+						<span>card: 1</span><br>
+						<span>cash: 2</span><br>
+						<span>Margin: 10000</span><br>
+					</div>
+				</div>
+			</div>
+		</section>
+	</article>
+</body>
+</html>

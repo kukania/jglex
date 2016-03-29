@@ -1,0 +1,41 @@
+.event 	{ position: fixed; right: 10px; top: 10px; }
+.event button 	{ border: 0; border-radius: 60px; width: 120px; height: 120px; 
+				background-color: red; }
+
+/*recommend div*/
+#recommend 	{ display: none; }
+.fullscreen { width: 100vw; height: 100vh; position: fixed; z-index: 10;
+			top: 0; left: 0; 
+			background-color: #fff6dc;}
+.fullscreen > .title 	{ width: 100vw; height: 120px; position: fixed; 
+						background-color: #323a45; }
+.fs_btn 	{ width: 100px; height: 100px; background-color: #323a45; }
+.fullscreen > .body 	{ width: 100vw; position: fixed; top: 120px; }
+.fs_prompt 	{ width: 100vw; margin: 20px auto; 
+			font-size: 4rem; text-align: center; }
+.fullscreen > .foot 	{ width: 100vw; height: 200px; position: fixed; 
+						bottom: 0; text-align: center; }
+.foot > button 	{ width: 60vw; height: 120px; margin: auto; }
+.foot > button > img 	{ width: 100px; height: 100px; vertical-align: middle; }
+.foot > button > span 	{ font-size: 4rem; vertical-align: middle; }
+
+.hc_item 		{ text-align: center; }
+.hc_item * 		{ vertical-align: middle; }
+.hc_item h4 	{ font-size: 6rem; margin: 20px; }
+.hc_item img 	{ width: 25vw; heigth: 25vh; }
+.hc_item input 	{ font-size: 6rem; }
+.hc_item span 	{ font-size: 6rem; }
+.hc_item label 	{ display: block; }
+
+.sl 		{ overflow: scroll; height: -webkit-calc(100vh - 120px - 4rem - 40px); }
+.sl_item 	{ box-shadow: 0 3px 5px #888; width: 100vw; }
+.sl_name 	{ display: block; float: left; font-size: 6rem; margin: 0; }
+.sl_price 	{ display: block; float: right; font-size: 4rem; }
+.sl_comp 	{ display: block; clear: both; color: #888; }
+.sl_msg 	{ font-size: 3rem; }
+
+.info 		{ padding: 20px; }
+.if_name 	{ display: block; font-weight: bold; font-size: 8rem; margin: 1rem 0;}
+.if_price 	{ display: block; font-size: 6rem; }
+.if_comp 	{ display: block; font-size: 4rem; color: #888; }
+.if_msg 	{ display: block; font-size: 4rem; }

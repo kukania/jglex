@@ -1,0 +1,508 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Table Information</title>
+    <meta charset=utf-8>
+    <link rel="stylesheet" href="TableCSS.css">
+    <script src="jquery-1.11.3.min.js"></script>
+    <script>
+        var MenuName = {
+            menu1: "닭갈비 포장(생닭)",
+            menu2: "닭갈비 포장(조리된)",
+            menu3: "좋은 날엔 닭갈비",
+            menu4: "닭갈비+1",
+            menu5: "닭갈비 정식",
+            menu6: "허브 치킨가스",
+            menu7: "닭가슴살 냉채",
+            menu8: "어린이 치킨가스",
+            menu9: "모듬 사리",
+            menu10: "우동 사리",
+            menu11: "라면 사리",
+            menu12: "떡 사리",
+            menu13: "고구마 사리",
+            menu14: "볶음밥",
+            menu15: "공기밥",
+            menu16: "양배추 샐러드",
+            menu17: "소주/맥주",
+            menu18: "막걸리",
+            menu19: "청하",
+            menu20: "음료수"
+        };
+        function findByMenuNum(menu) {
+            return MenuName[menu];
+        }
+    </script>
+    <script>
+        //set table
+        function makeSettingTable() {
+            for (var i in changeTable) {
+                var tempSelector = $("#table" + changeTable[i]["table"]);
+                tempSelector.children(".footer").html('<span class="tableNum">' + changeTable[i]["table"] + '</span>' + '<span class="price">' + changeTable[i]["price"] + '</span>');
+                for (var key in changeTable[i]["menu"]) {
+                    var keyName = findByMenuNum(key);
+                    tempSelector.children("div[name=new]").append("<p class='new' value='" + key + "'> <span class='menu'>" + keyName + "</span>" + "<span class='menuNum'>" + changeTable[i]["menu"][key] + "</span>" + "</p>");
+                }
+            }
+            changeTable = [];
+        }
+    </script>
+    <script>
+        //ajax
+        var changeTable = [];
+        function getInfo() {
+            $.ajax({
+                type: "POST",
+                url: "order_infoget(master).php",
+                dataType: "json",
+                success: function (data) {
+                    var jsonData = data;
+                    for (var key in jsonData) {
+                        if (jsonData[key]["table"] == null)
+                            continue;
+                        else {
+                            var tableTemp = {
+                                table: 0,
+                                price: 0,
+                                menu: []
+                            };
+                            for (var info in jsonData[key]) {
+                                if (info == "table")
+                                    tableTemp.table = jsonData[key][info];
+                                else if (info == "price")
+                                    tableTemp.price = jsonData[key][info];
+                                else {
+                                    tableTemp.menu["" + info] = jsonData[key][info];
+                                }
+                            }
+                            changeTable[key] = tableTemp;
+                        }
+                    }
+                    if (data != null) {
+                        makeSettingTable();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert(error);
+                }
+            })
+        };
+    </script>
+    <script>
+        //table sum new to old
+        function tableSumMenu(tableNode) {
+            var tempArray = [];
+            var tempValue = [];
+            $("#" + tableNode).children("div[name=old]").children("p").each(function (index, elem) {
+                if ($.inArray($(elem).children(".menu").text(), tempArray) == -1) {
+                    tempArray.push($(elem).children(".menu").text());
+                    tempValue.push($(elem).attr("value"));
+                }
+            });
+            for (var i = 0 ; i < tempArray.length; i++) {
+                var check = false;
+                var temp = 0;
+                $("#" + tableNode).children("div[name=old]").children("p").each(function (index, elem) {
+                    if ($(elem).children(".menu").text() == tempArray[i]) {
+                        if (check == false) {
+                            temp += parseInt($(elem).children(".menuNum").text());
+                            check == true;
+                            $(elem).remove();
+                        }
+                        else {
+                            temp += parseInt($(elem).children(".menuNum").text());
+                        }
+                    }
+                });
+                $("#" + tableNode).children("div[name=old]").children("p").each(function (index, elem) {
+                    if ($(elem).children(".menu").text() == tempArray[i]) {
+                        $(elem).children(".menuNum").text(temp);
+                    }
+                });
+                $("#" + tableNode).children("div[name=old]").append("<p value='" + tempValue[i] + "'> <span class='menu'>" + tempArray[i] + "</span>" + "<span class='menuNum'>" + temp + "</span>" + "</p>");
+                temp = 0;
+            }
+            deleteZero(tableNode);
+        }
+        //zero -> delete
+        function deleteZero(tableNode) {
+            $("#" + tableNode).children("div[name=old]").children("p").each(function (index, elem) {
+                if ($(elem).children(".menuNum").text() == "0")
+                    $(elem).remove();
+            })
+        }
+        //tableClick -> new to old
+        function tableClick(tableNode) {
+            var tempTask = [];
+            var tempValue = [];
+            $("#" + tableNode).children("div[name=new]").children(".new").each(function (index, elem) {
+                tempTask.push($(elem).html());
+                tempValue.push($(elem).attr("value"));
+            });
+            for (var htmlText in tempTask) {
+                $("#" + tableNode).children("div[name=old]").append("<p value='" + tempValue[htmlText] + "'>" + tempTask[htmlText] + "</p>");
+            }
+            $("#" + tableNode).children("div[name=new]").html("");
+            $("#" + tableNode).children("div[name=new]").append('<div class="upperBar blue"></div>');
+            tableSumMenu(tableNode);
+        }
+    </script>
+    <script>
+        function subMenu(menuInput) {
+            $("aside").children(".menuCheck").each(function (index, elem) {
+                if ($(elem).attr("id") == menuInput) {
+                    var many = parseInt($(elem).children("span[name=addMany]").text());
+                    many--;
+                    if (many == 0)
+                        $(elem).remove();
+                    else
+                        $(elem).children("span[name=addMany]").text(many);
+                }
+            });
+        }
+    </script>
+    <script>
+        //addmenu
+        /*
+            <aside>
+                <p class="menuCheck" id="menu3" onclick="subMenu(this.id)">
+                    <span name="addName"></span>
+                    <span name="addMany"></span>
+                </p>
+            </aside>
+        */
+        function addMenu(menuInput) {
+            var check = false;
+            $("aside").children(".menuCheck").each(function (index, elem) {
+                if ($(elem).attr("id") == menuInput) {
+                    var many = parseInt($(elem).children("span[name=addMany]").text());
+                    many++;
+                    $(elem).children("span[name=addMany]").text(many);
+                    check = true;
+                }
+            });
+            if (!check)
+                $("aside").append("<p class='menuCheck' id='" + menuInput + "' onclick='subMenu(this.id);'><span name='addName'>" + findByMenuNum(menuInput) + "</span><span name='addMany'>1</span></p>");
+        }
+    </script>
+    <script>
+        window.onload = function () {
+            var tempTable = $("#showTable").html();
+            for (var i = 1 ; i < 5; i++) {
+                $("#showTable").append(tempTable);
+            }
+            for (var i = 0; i < 4; i++) {
+                $("body").append("<section id='showTable'>" + $("#showTable").html() + "</section>");
+            }
+            $(".node_tableInfo").each(function (index, elem) {
+                $(elem).attr("id", "table" + (index + 1));
+            });
+            $(".footer").each(function (index, elem) {
+                $(elem).html('<span class="tableNum" value=' + (index + 1) + '>' + (index + 1) + '</span>');
+            })
+            $(".nonheader").children("article").children("p").each(function (index, elem) {
+                $(elem).attr("onclick", "addMenu(this.id);");
+            })
+            $(".tableNode").each(function (index, elem) {
+                $(elem).attr("onclick", "tableSelector(this);");
+            })
+            setInterval(function () {
+                getInfo();
+            }, 2000);
+        }
+    </script>
+    <script>
+        function orderWindowClose() {
+            $(".OrderWindow").attr("style", "display:none");
+            $("aside").html("");
+        }
+        function showWindow(inputName) {
+            if ($(".selectTableNum").attr("style") == "") {
+                $(".selectTableNum").attr("style", "display:none;");
+                $(".selectTableNum").attr("value", "");
+            }
+            else {
+                $(".selectTableNum").attr("style", "");
+                $(".selectTableNum").attr("value", inputName);
+            }
+        }
+    </script>
+    <script>
+        function tableSelector(node) {
+            $(".selectTableNum").attr("style", "display:none;");
+            var temp = $(".selectTableNum").attr("value");
+            $("." + temp).attr("style", "");
+            if (temp == "PayWindow") {
+                var tableNumber = "table" + node.innerHTML;
+                var price = $("#" + tableNumber).children(".footer").children(".price").text();
+                $(".PayWindow").attr("value", node.innerHTML);
+                $(".PayWindow").children("section").children("p").children("#allMoney").text(price);
+                $(".PayWindow").children("section").children("p").children("#remainMoney").text(price);
+            }
+            else {
+                $("." + temp).children("header").children("#send").attr("value", node.innerHTML);
+                $("." + temp).attr("value", node.innerHTML);
+                makeOrderWindow(node.innerHTML);
+            }
+        }
+    </script>
+    <script>
+        function makeOrderWindow(tableNum) {
+            var table = "table" + tableNum;
+            tableClick(table);
+            $("#" + table).children("div[name=old]").children("p").each(function (index, elem) {
+                $("aside").append("<p class='menuCheck' id='" + $(elem).attr("value") + "' onclick='subMenu(this.id);'><span name='addNmae'>" + $(elem).children(".menu").text() + "</span><span name='addMany'>" + $(elem).children(".menuNum").text() + "</span></p>");
+            });
+        }
+    </script>
+    <script>
+        function asideValueToOld() {
+            var tableNumber = "table" + $("#send").attr("value");
+            var tempMenu = [];
+            var passValue = "";
+            var aside = $(".OrderWindow").children(".nonheader").children("aside");
+            aside.children("p").each(function (index, elem) {
+                tempMenu[$(elem).attr("id")] = $(elem).children("span[name=addMany]").text();
+            })
+            var len = Object.keys(tempMenu).length;
+            var method = "post";
+            var gourl = "corder.php" + "?length=" + len + "&tableNum=" + $("#send").attr("value");
+            var i = 0;
+            for (var key in tempMenu) {
+                passValue += "manu" + i + "=";
+                passValue += key + "&";
+                passValue += "many" + i + "=";
+                passValue += tempMenu[key] + "&";
+                i++;
+            }
+            $.ajax({
+                type: "post",
+                url: gourl,
+                data: passValue,
+                dataType: "json",
+                error: function (xhr, status, error) {
+                    alert(error);
+                },
+                success: function (data) {
+                    var jsonData = data;
+                    if (jsonData["table"] != null) {
+                        var tableTemp = {
+                            table: 0,
+                            price: 0,
+                            menu: []
+                        };
+                        for (var info in jsonData) {
+                            if (info == "table")
+                                tableTemp.table = jsonData[info];
+                            else if (info == "price")
+                                tableTemp.price = jsonData[info];
+                            else {
+                                tableTemp.menu["" + info] = jsonData[info];
+                            }
+                        }
+                        var tempSelector = $("#table" + tableTemp["table"]);
+                        tempSelector.children(".footer").html('<span class="tableNum">' + tableTemp["table"] + '</span>' + '<span class="price">' + tableTemp["price"] + '</span>');
+                        for (var key in tableTemp.menu) {
+                            if (tableTemp.menu[key] == "0")
+                                continue;
+                            var keyName = findByMenuNum(key);
+                            tempSelector.children("div[name=new]").append("<p class='new' value='" + key + "'> <span class='menu'>" + keyName + "</span>" + "<span class='menuNum'>" + tableTemp.menu[key] + "</span>" + "</p>");
+                        }
+                    }
+                    if (data != null) {
+                        makeSettingTable();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert(error);
+                }
+            });
+            aside.html("");
+            $(".OrderWindow").attr("style", "display:none;");
+        }
+    </script>
+    <script>
+        function payGo(input, remainMoney, money) {
+            var test;
+            var url_;
+            alert(remainMoney);
+            if (input == false) {
+                test = 0;
+            }
+            else {
+                test = 1;
+            }
+            if (remainMoney == 0) {
+                var tableNum = $(".PayWindow").attr("value");
+                url_ = "cash_ok.php?tableNum=" + tableNum + "&money=" + money + "&check=" + test + "&complete=1";
+                $.ajax({
+                    type: "POST",
+                    url: url_,
+                    success: function (data) {
+                        alert(data);
+                    }
+                });
+                $(".PayWindow").attr("style", "display:none;");
+                $("#table" + tableNum).html('<div class="partition" name="old"><div class="upperBar green"></div></div><div class="partition" name="new"><div class="upperBar blue"></div></div><div class="footer"><span class="tableNum" value="1">' + tableNum + '</span></div>');
+            }
+            else {
+                var tableNum = $(".PayWindow").attr("value");
+                url_ = "cash_ok.php?tableNum=" + tableNum + "&money=" + money + "&check=" + test + "&complete=0";
+                $(".PayWindow").children("section").children("p").children("#remainMoney").text(remainMoney);
+
+                $.ajax({
+                    type: "POST",
+                    url: url_,
+                    success: function (data) {
+                        alert(data);
+                    }
+                });
+            }
+            $("#COC").html("");
+        }
+    </script>
+    <script>
+        function pay() {
+            var inputMoney = $(".PayWindow").children("#cal").children("input[name=money]").val();
+            var remainMoney = parseInt($(".PayWindow").children("section").children("p").children("#remainMoney").text());
+            remainMoney -= inputMoney;
+            $("#COC").append("<button onclick='payGo(true," + remainMoney + "," + inputMoney + ")'>카드 결제</button><button onclick='payGo(false," + remainMoney + "," + inputMoney + ")'>현금 결제</button>")
+        }
+    </script>
+    <script>
+        function payNot() {
+            $(".PayWindow").attr("style", "display:none;")
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <div class="upperBar blue"></div>
+        <div class="upperBar orange"></div>
+        <div class="upperBar green"></div>
+        <div class="upperBar red"></div>
+        <span class="headline">좋은 날엔 닭갈비</span>
+        <div class="windowButton"
+             onclick="showWindow('OrderWindow')">
+            <p>추가 주문</p>
+        </div>
+        <div class="windowButton"
+             onclick="showWindow('PayWindow')">
+            <p>결제하기</p>
+        </div>
+    </header>
+    <div class="selectTableNum" style="display:none;">
+        <div class="tableNode">1</div>
+        <div class="tableNode">2</div>
+        <div class="tableNode">3</div>
+        <div class="tableNode">4</div>
+        <div class="tableNode">5</div>
+        <div class="tableNode">6</div>
+        <div class="tableNode">7</div>
+        <div class="tableNode">8</div>
+        <div class="tableNode">9</div>
+        <div class="tableNode">10</div>
+        <div class="tableNode">11</div>
+        <div class="tableNode">12</div>
+        <div class="tableNode">13</div>
+        <div class="tableNode">14</div>
+        <div class="tableNode">15</div>
+        <div class="tableNode">16</div>
+        <div class="tableNode">17</div>
+        <div class="tableNode">18</div>
+        <div class="tableNode">19</div>
+        <div class="tableNode">20</div>
+        <div class="tableNode">21</div>
+        <div class="tableNode">22</div>
+        <div class="tableNode">23</div>
+        <div class="tableNode">24</div>
+        <div class="tableNode">25</div>
+    </div>
+    <div class="PayWindow" id="PayWindow" style="display:none;">
+        <section>
+            <p>
+                총 가격: <span id="allMoney">100,000</span>\
+                <br>
+                남은 가격: <span id="remainMoney">0</span>\
+            </p>
+        </section>
+        <div class="upperBar red"></div>
+        <section id="cal">
+            결제할 금액:
+            <input type="number" min="0" name="money" value="0">
+            <button onclick="pay();">결제</button>
+            <button onclick="payNot();">취소</button>
+        </section>
+        <section id="COC"></section>
+    </div>
+
+    <div class="OrderWindow" style="display:none;">
+        <header>
+            <a id="back" href="#" onclick="orderWindowClose();">
+                <img src="Back_mark.png">
+            </a>
+            <span>추가 주문</span>
+            <a id="send" href="#" onclick="asideValueToOld();">
+                <img src="V_mark.png">
+            </a>
+        </header>
+
+        <div class="nonheader">
+            <aside></aside>
+            <article>
+                <div class="upperBar green"></div>
+                <p id="menu3">좋은 날엔 닭갈비</p>
+                <p id="menu4">닭갈비+1</p>
+                <p id="menu1">닭갈비 포장(생닭)</p>
+                <p id="menu2">닭갈비 포장(조리된)</p>
+                <p id="menu5">닭갈비 정식</p>
+                <p id="menu6">허브 치킨가스</p>
+                <p id="menu7">닭가슴살 냉채</p>
+                <p id="menu8">어린이 치킨가스</p>
+                <div class="upperBar blue"></div>
+                <p id="menu9">모둠 사리</p>
+                <p id="menu10">우동 사리</p>
+                <p id="menu11">라면 사리</p>
+                <p id="menu12">떡사리</p>
+                <p id="menu14">고구마사리</p>
+                <div class="upperBar orange"></div>
+                <p id="menu17">소주/맥주</p>
+                <p id="menu18">막걸리</p>
+                <p id="menu19">청하</p>
+                <p id="menu20">음료수</p>
+                <div class="upperBar red"></div>
+                <p id="menu14">볶음밥</p>
+                <p id="menu15">공기밥</p>
+                <p id="menu16">양배추 샐러드</p>
+            </article>
+        </div>
+    </div>
+    <!--
+    <div class="node_tableInfo" id="table1">
+        <div class="partition">
+        <div class="upperBar green"></div>
+        <p>
+            <span class="name">좋은 날엔 닭갈비</span>
+            <span class="count green">2</span>
+        </p>
+        </div>
+        <p class="new">
+        </p>
+        <span class="tableNum">1</span>
+        <span class="price">100,000\</span>
+    </div>
+    -->
+    <section id="showTable">
+        <div class="node_tableInfo" name="node_tableInfo" id="" onclick="tableClick(this.id);">
+            <div class="partition" name="old">
+                <div class="upperBar green"></div>
+            </div>
+            <div class="partition" name="new">
+                <div class="upperBar blue"></div>
+            </div>
+            <div class="footer">
+
+            </div>
+        </div>
+    </section>
+</body>
+</html>

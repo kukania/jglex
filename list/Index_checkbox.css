@@ -1,0 +1,86 @@
+body {
+  font-family:"helvetica";
+}
+.checkbox.custom {
+  float: left;
+  margin: 0;
+  padding: 0;
+  display: block;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+input[type="checkbox"].custom {
+  margin-left: 0;
+  padding:0;
+}
+
+input[type=checkbox].css-checkbox {
+  position:absolute;
+  overflow:hidden;
+  clip:rect(0 0 0 0);
+  height:1px;
+  width:1px;
+  margin:-1px;
+  padding:0px;
+  border:0;
+}
+
+input[type=checkbox].css-checkbox+label.css-label,
+input[type=checkbox].css-checkbox+label.css-label-red,
+input[type=checkbox].css-checkbox+label.css-label-yellow,
+input[type=checkbox].css-checkbox+label.css-label-blue,
+input[type=checkbox].css-checkbox+label.css-label-purple{
+  padding-left:22px;
+  height:65px;
+  width:65px;
+  display:inline-block;
+  line-height:15px;
+  background-repeat:no-repeat;
+  background-position:0 0;
+  font-size:13px;
+  vertical-align:middle;
+  cursor:pointer;
+  opacity:1;
+  -webkit-transition: all .2s ease-out;
+  -moz-transition: all .2s ease-out;
+  -ms-transition: all .2s ease-out;
+  -o-transition: all .2s ease-out;
+  transition: all .2s ease-out;
+}
+
+input[type=checkbox].css-checkbox+label.css-label:hover,
+input[type=checkbox].css-checkbox+label.css-label-red:hover,
+input[type=checkbox].css-checkbox+label.css-label-yellow:hover,
+input[type=checkbox].css-checkbox+label.css-label-blue:hover,
+input[type=checkbox].css-checkbox+label.css-label-purple:hover{
+  opacity:0.5;
+}
+
+input[type=checkbox].css-checkbox:checked+label.css-label,
+input[type=checkbox].css-checkbox:checked+label.css-label-red,
+input[type=checkbox].css-checkbox:checked+label.css-label-yellow,
+input[type=checkbox].css-checkbox:checked+label.css-label-blue,
+input[type=checkbox].css-checkbox:checked+label.css-label-purple{
+  background-position:0 -66px;
+}
+
+.css-label {
+  background-image:url(http://gdurl.com/mFuJ);
+}
+
+.css-label-red {
+  background-image:url(http://gdurl.com/DB5C);
+}
+
+.css-label-yellow {
+  background-image:url(http://gdurl.com/XmI9);
+}
+
+.css-label-blue {
+  background-image:url(http://gdurl.com/ab4f);
+}
+
+.css-label-purple {
+  background-image:url(http://gdurl.com/561n);
+}

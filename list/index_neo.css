@@ -1,0 +1,14 @@
+.tab button p 	{ font-size: 3rem; }
+.in 	{ font-size: 3rem; }
+.inner 	{ width: 42vw; margin: 2vw; padding: 2vw; border-radius: 2vw; background-color: #323a45; }
+.txt 	{ height: 6rem; padding: 1rem; }
+.in div { position: relative; right: 0; }
+.inner input 	{ width: 12rem; height: 12rem; font-size: 12rem; position: absolute; }
+
+/*inner*/
+.mc 	{ float: right; position: absolute; }
+.mc * 	{ display: block; font-size: 8rem; width: 22vw; }
+.mc .mc_command { float:right; width: 20vw; height: 42vh; }
+.mc button 	{ height: 16.5vh; border: 12px solid;  float: left; }
+.mc span 	{ background-color: #fff6dc; }
+

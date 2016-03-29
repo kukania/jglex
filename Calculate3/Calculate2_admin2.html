@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculating page</title>
+    <meta charset=utf-8>
+    <link rel="stylesheet" href="Calculate3.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="showAdmin.js"></script>
+    <!--for setTableNum-->
+    <link rel="stylesheet" href="noUiSlider.8.0.2/nouislider.css">
+    <link rel="stylesheet" href="noUiSlider.8.0.2/nouislider.min.css">
+    <script src="noUiSlider.8.0.2/nouislider.js"></script>
+    <script>
+		// Toggle Article
+		function toggleArticle(me){
+			// for manageArticle animation
+			$("#manageArticle > button").removeClass();
+			$("#manageArticle > button").addClass("unSelected");
+			$(me).addClass("selected");
+			// for changing articles(contents)
+			$(".admin").each(function(index,elem){
+				$(elem).css("display", "none");
+			})
+			if($(me).attr("id") == "btnM"){
+				$("#manageMenu").css("display", "-webkit-flex");
+				$("#manageMenu").css("display", "flex");
+			}
+			else if($(me).attr("id") == "btnR"){
+				$("#manageReservation").css("display", "-webkit-flex");
+				$("#manageReservation").css("display", "flex");
+			}
+			else if($(me).attr("id") == "btnS"){
+				$("#showReservation").css("display", "-webkit-flex");
+				$("#showReservation").css("display", "flex");
+			}
+		}
+    </script>
+    <script>
+    	function getReservation(){
+    		$.ajax({
+    			type: "POST",
+        		url: "getReservation.php",
+        		dataType: "JSON",
+        		success: function (data) {
+                 var i=1;
+                 for(var key in data){
+                    $("#reservationTable").children("tbody").append("<tr><td>"+i+"</td><td></td><td></td><td></td><td><td></td></td><td></td><td></td></tr>");
+                     for(var key2 in data[key]){
+                        if(key2=="people"){
+                           $("#reservationTable").children("tbody").children("tr").last().children("td").eq(1).append(data[key][key2]);
+                        }
+                        else if(key2=="time"){
+                           $("#reservationTable").children("tbody").children("tr").last().children("td").eq(2).append(data[key][key2]);
+                        }
+                        else if(key2=="phone_number"){
+                           $("#reservationTable").children("tbody").children("tr").last().children("td").eq(3).append(data[key][key2]);                           
+                        }
+                        else if(key2=="name"){
+                           $("#reservationTable").children("tbody").children("tr").last().children("td").eq(5).append(data[key][key2]);
+                        }
+                        else if(key2=="number"){
+                           var num=data[key][key2];
+                        }
+                        else{
+                           $("#reservationTable").children("tbody").children("tr").last().children("td").eq(4).append(key2+":"+data[key][key2]+"<br/>");
+                        }
+                     }
+                     $("#reservationTable").children("tbody").children("tr").last().children("td").eq(6).append("미확인");
+                     $("#reservationTable").children("tbody").children("tr").last().children("td").eq(7).append("<button onclick='openWindowS("+num+");'>수락</button><button onclick='reservationRefuse("+num+")'>거절</button>");
+                     i++;
+                  }
+               },
+        		error: function (xhr, status, error) {
+            		alert(error);
+        		}
+    		})
+    	}
+    </script>
+    <script>
+		window.onload = function () {
+		    makeTable();
+			getReservation();
+		}
+    </script>
+	<!--예약을 위한 서버와의 통신 스크립트-->
+    <script>
+        function reservationAccept(input){
+        	 // get Number of table
+        	 var rangeSlider = document.getElementById('rangeTableNum');
+        	 var tableNum_ = 3;
+        	 rangeSlider.noUiSlider.on('update', function(values,handle){
+				tableNum_ = values[handle];
+			})
+			var data_ = {tableNum:tableNum_, pk:input};
+			alert("give data_"+
+			"\ndata_.tableNum:"+data_.tableNum+
+			"\ndata_.pk:"+data_.pk);
+        	$.ajax({
+                type: "GET",
+                url: "reservationAccept.php?num=" + input,
+                dataType: "TEXT",
+                data: data_,
+                success: function (data) {
+                	// success: add to dailyReserv
+                	if(data == "1"){
+                		alert(data);
+                		fillDailyReservation();
+                	}
+                	// fail: do nothing
+                	else{}
+                }
+            });
+        }
+        function reservationRefuse(input){
+        	var data_ = {tableNum:6, pk:input};
+        	$.ajax({
+                type: "GET",
+                url: "reservationAccept.php?num=" + input,
+                dataType: "TEXT",
+                data: data_,
+                success: function (data) {
+                	// success: add to dailyReserv
+                	if(data == "1"){
+                		alert(data);
+                		fillDailyReservation();
+                	}
+                	// fail: do nothing
+                	else{}
+                }
+            });
+        }
+        function fillReservated(data){
+        	// clear reservatedTable tbody
+        	$("#rtBody").html("");
+        	console.log(data.length);
+        	for (var i = 0; i < data.length; i++){
+        		var str = "<tr>";
+        		for(var elem in data[i]){
+        			str += "<td>" + data[i][elem] + "</td>";
+        		}
+        		str += "</tr>";
+        		$("#rtBody").html($("#rtBody").html()+str);
+        	}
+        }
+        function getReservedInfo(){
+        	 Date.prototype.yyyymmdd = function() {
+			   var yyyy = this.getFullYear().toString();
+			   var mm = (this.getMonth()+1).toString(); // getMonth() is zero-based
+			   var dd  = this.getDate().toString();
+			   return yyyy +"-" +(mm[1]?mm:"0"+mm[0]) +"-"+ (dd[1]?dd:"0"+dd[0]); // padding
+			  };
+			
+			d = new Date();
+			console.log(d.yyyymmdd());
+        	var data_ = {date:d.yyyymmdd()};
+        	$.ajax({
+        		type: "GET",
+        		url: "getreserveinfo.php",
+        		dataType: "JSON",
+        		data: data_,
+        		success: function (data){
+        			fillReservated(data);
+        		}
+        	})
+        }
+    </script>
+	<!--예약에서 사용되는 애니메이션 스크립트-->
+    <script>
+		// Edit button을 click했을 때 id가 같은 엘레멘트 open
+		function openWindowS(id){
+			$("#setTableNum").css('display', 'block');
+			$("#submit").click(function(){
+				reservationAccept(id);
+			})
+		}
+		// x키를 누르면 닫히는 윈도우 함수
+    	function closeWindowS(id){
+    		$("#setTableNum").css('display', 'none');
+    	};
+		// 예약할 때 테이블 자리수 UI를 구현한 js
+    	$(document).ready(function(){
+	    	var rangeSlider = document.getElementById('rangeTableNum');
+			// 슬라이더를 만들어주는 js
+			noUiSlider.create(rangeSlider, {
+				start: 3,
+				step: 1,
+				connect: 'lower',
+				range: {
+					'min': 0,
+					'max': 5
+				},
+				// 밑에 점선
+				pips: {
+					mode:'count',
+					values: 6
+				}
+			});
+			// 현재 슬라이드에서 설정된 값을 
+			rangeSlider.noUiSlider.on('update', function(values,handle){
+				$(".tn").html(values[handle]);
+			});
+		})
+		
+    </script>
+    <!-- 이미지 업로드를 위한 스크립트 -->
+    <script>
+    	$(function() {
+            $("#imgInp").on('change', function(){
+                readURL(this);
+            });
+        });
+
+        function readURL(input) {
+        	for(var i = 0; i < 3; i++){
+        		$('.prevImg').eq(i).attr('src','#');
+        	}
+	        if(input.files && input.files[0]){
+	        	var reader = new FileReader();
+	        	reader.onload = function (e){
+	        		$('.prevImg').eq(0).attr('src', e.target.result);
+	        	}
+	        	reader.readAsDataURL(input.files[0]);
+	        }
+            if(input.files && input.files[1]){
+	        	var reader = new FileReader();
+	        	reader.onload = function (e){
+	        		$('.prevImg').eq(1).attr('src', e.target.result);
+	        	}
+	        	reader.readAsDataURL(input.files[1]);
+	        }
+	        if(input.files && input.files[2]){
+	        	var reader = new FileReader();
+	        	reader.onload = function (e){
+	        		$('.prevImg').eq(2).attr('src', e.target.result);
+	        	}
+	        	reader.readAsDataURL(input.files[2]);
+	        }
+        }
+        
+        function sendFile(){
+        	$.ajax({
+        		type: "POST",
+        		url: "File_Upload.php",
+        	})
+        }
+    </script>
+</head>
+<body>
+<!--네비게이션(chart와 admin페이지 간 이동)-->
+    <nav>
+        <div class="grid" id="nav_tab">
+            <span class="tab" onclick="location.href='Calculate2_chart.html'">
+                CHART
+            </span>
+            <span class="tab br_right selected" onclick="location.href='Calculate2_admin.html'">
+                ADMIN
+            </span>
+        </div>
+    </nav>
+<!--네비게이션 종료-->
+
+<!--로고 이미지 첨부-->
+    <header>
+        <img src="./Resources/Title.png" alt="no image"
+             width="600px" height="90px">
+    </header>
+<!--로고이미지 종료-->
+
+<!--admin페이지 메뉴/예약부분 전환 버튼-->
+	<section id="manageArticle">
+		<button type="button" id="btnM" class="selected"
+			onclick="toggleArticle(this)">
+			메뉴 관리
+		</button>
+		<button type="button" id="btnR" class="unSelected"
+			onclick="toggleArticle(this);">
+			예약 관리
+		</button>
+		<button type="button" id="btnS" class="unSelected"
+			onclick="toggleArticle(this); getReservedInfo();">
+			예약 확인
+		</button>
+	</section>
+<!--admin페이지 전환버튼 종료-->
+
+<!--본문 manu management 시작-->
+    <section id="manageMenu"class="admin">
+    <!--manu management > table부분 시작-->
+        <article id="testTable">
+            <div id="tableScroll">
+            <table id="myTable">
+            	<thead>
+                <tr>
+                    <th>번호</th>
+                    <th>이름</th>
+                    <th>가격</th>
+                    <th>마진</th>
+                    <th>분류</th>
+                    <th>편집</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+            </div>
+        </article>
+        <!--manu management > table부분 종료-->
+        <!--manu management > menu_edit부분 시작-->
+        <article id="menu_edit" class="window">
+            <div class="title">
+                <span>Menu Edit</span>
+            </div>
+            <div class="container">
+               
+                <div class="set">
+                    <input type="text" class="value" name="num"
+                        value="Num">
+                </div>
+                <div class="set">
+                    <input type="text" class="value" name="name"
+                        value="Name">
+                </div>
+                <div class="set">
+                    <input type="text" class="value" name="price"
+                        value="Price">
+                </div>
+                <div class="set">
+                    <input type="text" class="value" name="margin"
+                        value="Margin">
+                </div>
+                <div class="set">
+                	<select>
+                		<option value="1">닭요리</option>
+                		<option value="2">사리</option>
+                		<option value="3">음료</option>
+                		<option value="4">기타</option>
+                	</select>
+                </div>
+            </div>
+            <div class="container" id='footer'>
+                <button id="delete" onclick="deleteMenu(this);">삭제</button>
+                <button id="apply" onclick="editMenu(this); sendFile()">적용</button>
+            </div>
+            <div class="container" id="uploadImage">
+            	<form action="File_Upload.php" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="MAX_FILE_SIZE" value="30000" />
+                    <input type="hidden" name="num" id="val"/>
+                    <input type='file' id="imgInp" name="userfile[]" multiple>
+			        <input type="submit" value="Upload Image" name="submit"><hr>
+			        <img class="prevImg" src="#" alt="your image 1" /><hr>
+			        <img class="prevImg" src="#" alt="your image 2" /><hr>
+			        <img class="prevImg" src="#" alt="your image 3" />
+			    </form>
+            </div>
+            
+        </article>
+        <!--manu management > menu_edit부분 종료-->
+    </section>
+<!--본문 manu management 종료-->
+<!--본문 Reservation management시작-->	
+	<section id="manageReservation" class="admin" style="display:none">
+		<article id="setTableNum" class="window" style="display:none">
+			<div class="title">
+				<span>Set the number of table</span>
+				<button class="quit" onclick="closeWindowS()">x</button>
+			</div>
+			<div class="container" >
+				<p>현재 예약할 테이블 수: <span class="tn">3</span>자리</p>
+				<div id="rangeTableNum" style="margin-bottom: 30px;"></div>
+			</div>
+			<div class="container setFlex">
+				<button id="submit">Submit</button>
+			</div>
+		</article>
+    	<article id="reservation" style="background-color:red;
+        z-index:2">
+            <table id="reservationTable">
+            	<thead>
+	                <tr>
+	                    <th>시간</th>
+	                    <th>인원</th>
+	                    <th>번호</th>
+	                    <th>휴대전화</th>
+	                    <th>주문</th>
+	                    <th>예약자</th>
+						<th>상태</th>
+						<th colspan="2">응답</th>
+	                </tr>
+             	</thead>
+                <tbody>
+                	
+                </tbody>
+            </table>
+        </article>
+	</section>
+<!--본문 Reservation management종료-->	
+<!--본문 Show Reservation시작-->	
+	<section id="showReservation" class="admin" style="display:none">
+		
+    	<article id="dailyReservation" style="background-color:red;
+        z-index:2">
+            <table id="reservatedTable">
+            	<thead>
+	                <tr>
+						<th>예약자</th>
+	                    <th>휴대전화</th>
+						<th>인원</th>
+	                    <th>테이블 수</th>
+	                    <th>시간</th>
+	                    <th>주문</th>
+	                </tr>
+             	</thead>
+                <tbody id="rtBody">
+                	
+                </tbody>
+            </table>
+        </article>
+	</section>
+<!--본문 Reservation management종료-->	
+
+</body>
+</html>

@@ -1,0 +1,219 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>Table Information</title>
+	<meta charset=utf-8>
+	<link rel="stylesheet" href="OrderInfo.css">
+    <script src="jquery-1.11.3.min.js"></script>
+    <script>
+        function getCookie(name) {
+            var value = "; " + document.cookie;
+            var parts = value.split("; " + name + "=");
+            if (parts.length == 2) return parts.pop().split(";").shift();
+        }
+        var MenuName = {
+            menu1: "닭갈비 포장(생닭)",
+            menu2: "닭갈비 포장(조리된)",
+            menu3: "좋은 날엔 닭갈비",
+            menu4: "닭갈비+1",
+            menu5: "닭갈비 정식",
+            menu6: "허브 치킨가스",
+            menu7: "닭가슴살 냉채",
+            menu8: "어린이 치킨가스",
+            menu9: "모듬 사리",
+            menu10: "우동 사리",
+            menu11: "라면 사리",
+            menu12: "떡 사리",
+            menu13: "고구마 사리",
+            menu14: "볶음밥",
+            menu15: "공기밥",
+            menu16: "양배추 샐러드",
+            menu17: "소주/맥주",
+            menu18: "막걸리",
+            menu19: "청하",
+            menu20: "음료수"
+        };
+        function subMenu(menuInput) {
+            $("aside").children(".menuCheck").each(function (index, elem) {
+                if ($(elem).attr("id") == menuInput) {
+                    var many = parseInt($(elem).children("span[name=addMany]").text());
+                    many--;
+                    if (many == 0)
+                        $(elem).remove();
+                    else
+                        $(elem).children("span[name=addMany]").text(many);
+                }
+            });
+        }
+        function findByMenuNum(menu) {
+            return MenuName[menu];
+        }
+        function addMenu(menuInput) {
+            var check = false;
+            $("aside").children(".menuCheck").each(function (index, elem) {
+                if ($(elem).attr("id") == menuInput) {
+                    var many = parseInt($(elem).children("span[name=addMany]").text());
+                    many++;
+                    $(elem).children("span[name=addMany]").text(many);
+                    check = true;
+                }
+            });
+            if (!check)
+                $("aside").append("<p class='menuCheck' id='" + menuInput + "' onclick='subMenu(this.id);'><span name='addName'>" + findByMenuNum(menuInput) + "</span><span name='addMany'>1</span></p>");
+        }
+        function showWindow() {
+            $(".OrderWindow").attr("style", "");
+            $(".orderEdit").children("p").each(function (index, elem) {
+                if($(elem).attr("id")!="price")
+                    $("aside").append("<p class='menuCheck' id='" + $(elem).attr("id") + "' onclick='subMenu(this.id);'><span name='addName'>" + $(elem).children(".name").text() + "</span><span name='addMany'>" + $(elem).children(".count").text() + "</span></p>");
+            });
+		}
+		function orderWindowClose() {
+		    $(".OrderWindow").attr("style", "display:none");
+		    $("aside").html("");
+		}
+		window.onload = function () {
+		    $(".nonheader").children("article").children("p").each(function (index, elem) {
+		        $(elem).attr("onclick", "addMenu(this.id);");
+		    });
+		    var tableN = getCookie("tableNum");
+		    $("#send").attr("value", tableN);
+		    setInterval(function () {
+		        $.ajax({
+		            type: "post",
+		            url: "order_infoget(guest).php?tableNum=" + tableN,
+		            dataType: "json",
+		            success: function (data) {
+		                var jsonData = data;
+		                if(data==null)
+		                	return;
+		                $(".orderEdit").html("");
+		                $(".orderEdit").append('<div class="divLine orange"></div>');
+		                for (var key in data) {
+		                    if (key == "idNum")
+		                        $("#orderNum").text(jsonData[key]);
+		                    else if (key == "isOk")
+		                        if (jsonData['isOk'] == '0')
+		                            $("#now").text("대기 중");
+		                        else
+		                        { }
+		                    else {
+		                        $(".orderEdit").append("<p id=" + key + "><span class='name'>" + MenuName[key] + "</span><span class='count'>" + jsonData[key] + "</sapn></p>");
+		                    }
+		                }
+		                $("#price").children(".name").text("가격");
+		            }
+		        });
+		    }, 2000);
+		}
+    </script>
+    <script>
+        function asideValueToOld() {
+            var tempMenu = [];
+            var passValue = "";
+            var aside = $(".OrderWindow").children(".nonheader").children("aside");
+            aside.children("p").each(function (index, elem) {
+                tempMenu[$(elem).attr("id")] = $(elem).children("span[name=addMany]").text();
+            })
+            var len = Object.keys(tempMenu).length;
+            var method = "post";
+            var gourl = "edit_guest.php" + "?length=" + len + "&tableNum=" + $("#send").attr("value");
+            var i = 0;
+            for (var key in tempMenu) {
+                passValue += "manu" + i + "=";
+                passValue += key + "&";
+                passValue += "many" + i + "=";
+                passValue += tempMenu[key] + "&";
+                i++;
+            }
+            $(".orderEdit").html("");
+            $(".orderEdit").append('<div class="divLine orange"></div>');
+            $.ajax({
+                type: "post",
+                url: gourl,
+                data: passValue,
+                dataType: "json",
+                error: function (xhr, status, error) {
+                    alert(error);
+                },
+                success: function (data) {
+                    var jsonData = data;
+                    for (var key in data) {
+                        if (key == "idNum")
+                            $("#orderNum").text(jsonData[key]);
+                        else if (key == "isOk")
+                            if (jsonData['isOk'] == '0')
+                                $("#now").text("대기 중");
+                            else
+                            { }
+                        else {
+                            $(".orderEdit").append("<p id=" + key + "><span class='name'>" + MenuName[key] + "</span><span class='count'>" + jsonData[key] + "</sapn></p>");
+                        }
+                    }
+                    $("#price").children(".name").text("가격");
+                },
+                error: function (xhr, status, error) {
+                    alert(error);
+                }
+            });
+            aside.html("");
+            $(".OrderWindow").attr("style", "display:none;");
+        }
+    </script>
+</head>
+<body>
+    <div class="OrderWindow" style="display:none;">
+        <header>
+            <a id="back" href="#" onclick="orderWindowClose();">
+                <img src="Back_mark.png">
+            </a>
+            <span>추가 주문</span>
+            <a id="send" href="#" onclick="asideValueToOld();">
+                <img src="V_mark.png">
+            </a>
+        </header>
+        <div class="nonheader">
+            <aside></aside>
+            <article>
+                <div class="upperBar green"></div>
+                <p id="menu3">좋은 날엔 닭갈비</p>
+                <p id="menu4">닭갈비+1</p>
+                <p id="menu1">닭갈비 포장(생닭)</p>
+                <p id="menu2">닭갈비 포장(조리된)</p>
+                <p id="menu5">닭갈비 정식</p>
+                <p id="menu6">허브 치킨가스</p>
+                <p id="menu7">닭가슴살 냉채</p>
+                <p id="menu8">어린이 치킨가스</p>
+                <div class="upperBar blue"></div>
+                <p id="menu9">모둠 사리</p>
+                <p id="menu10">우동 사리</p>
+                <p id="menu11">라면 사리</p>
+                <p id="menu12">떡사리</p>
+                <p id="menu14">고구마사리</p>
+                <div class="upperBar orange"></div>
+                <p id="menu17">소주/맥주</p>
+                <p id="menu18">막걸리</p>
+                <p id="menu19">청하</p>
+                <p id="menu20">음료수</p>
+                <div class="upperBar red"></div>
+                <p id="menu14">볶음밥</p>
+                <p id="menu15">공기밥</p>
+                <p id="menu16">양배추 샐러드</p>
+            </article>
+        </div>
+    </div>
+	<section class="">
+		<div class="menuList panel">
+			<div class="orderInfo">
+				<span id="orderNum"></span>
+				<span id="now"></span>
+				<span class="edit"
+					onclick="showWindow();">수정</span>
+			</div>
+			<div class="orderEdit">
+				<div class="divLine orange"></div>
+			</div>
+		</div>
+	</section>
+</body>
+</html>

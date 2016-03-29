@@ -1,0 +1,66 @@
+<?php header("Content-Type:text/html;charset=utf-8");?>
+<?php
+   $servername="127.0.0.1";
+   $username="root";
+   $password="apmsetup";
+   $dbname="jglex";
+   $abc='"';
+   $conn = mysqli_connect($servername, $username, $password, $dbname);
+   if (!$conn) {
+     die("Connection failed: " . mysqli_connect_error());
+}
+   $tablenum=$_GET['tableNum'];
+   $sql="select ";
+   for($i=1;$i<=20;$i++)
+   {
+      $sql.="menu".$i.",";
+   }
+   $tprice=0;
+   $sql.="price from order_info where cash_ok=0&&table_num=".$tablenum;
+   $result = $conn->query($sql);
+   if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+       for($i=1;$i<=20;$i++)
+       {
+          $menu[$i]=$row["menu".$i];
+       }
+       $price[$j]=$row["price"];
+       $tprice+=$price[$j];
+    }
+} else {
+    echo "0 results";
+}
+   //echo $sql;
+   $manu[1]="닭갈비 포장(생닭)";
+   $manu[2]="닭갈비 포장(조리된)";
+   $manu[3]="좋은 날엔 닭갈비";
+   $manu[4]="닭갈비+1";
+   $manu[5]="닭갈비 정식";
+   $manu[6]="허브 치킨가스";
+   $manu[7]="닭가슴살 냉채";
+   $manu[8]="어린이 치킨가스";
+   $manu[9]="모듬 사리";
+   $manu[10]="우동 사리";
+   $manu[11]="라면 사리";
+   $manu[12]="떡 사리";
+   $manu[13]="고구마 사리";
+   $manu[14]="볶음밥";
+   $manu[15]="공기밥";
+   $manu[16]="양배추 샐러드";
+   $manu[17]="소주/맥주";
+   $manu[18]="막걸리";
+   $manu[19]="청하";
+   $manu[20]="음료수";
+   $return["idNum"]=$id_num;
+   $return["isOk"]=$isok;
+   for($i=1;$i<=20;$i++)
+   {
+      if($menu[$i]!=0)
+      {
+         $return["menu".$i]=$menu[$i];
+      }
+   }
+   $return["price"]=$tprice;
+   echo json_encode($return);
+   mysqli_close($conn);
+?>

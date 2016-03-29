@@ -1,0 +1,321 @@
+﻿@charset "utf-8";
+/* CSS Document */
+
+body{
+	background-color: #dddddd;
+	margin: 0px;
+}
+*{
+	-webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+	font-family: "나눔고딕", "맑은고딕";
+	font-family: "나눔고딕", "맑은고딕";
+}
+
+header{
+	display: block;
+	width: 100%;
+	background-color: #ffffff;
+	height: 140px;	
+    overflow:hidden;
+}
+span.headline{
+	font-family: "나눔바른펜","맑은고딕";
+	font-size: 4.5em;
+	font-weight: bold;
+}
+header div.upperBar{
+	float: left;
+	width: 25%;
+	padding: 5px 0;
+}
+
+section{
+	display: block;
+    width: 99.6%;
+    margin: 0.2%;
+}
+section:after{
+	content:"";
+	display:table;
+	clear:both;
+}
+div.node_tableInfo{
+	display: block;
+	float: left;
+	width: 19.6%;
+	margin: 0.2%;
+    line-height: 1.2em;
+	-webkit-transition: all 0.2s ease;
+ 	-moz-transition: all 0.2s ease;
+	-o-transition: all 0.2s ease;
+	transition: all 0.2s ease;
+	z-index:0;
+}
+div.node_tableInfo:hover{
+	z-index:1000;
+	box-shadow:rgba(0, 0, 0, 0.3) 0 16px 16px 0;
+	-webkit-box-shadow:rgba(0, 0, 0, 0.3) 0 16px 16px 0;
+	-moz-box-shadow:rgba(0, 0, 0, 0.3) 0 16px 16px 0;
+}
+div.node_tableInfo div.partition{
+	display: block;
+	background-color:#ffffff;
+	border: 1px solid #eeeeee;
+//	text-align: center;
+}
+div.partition div.upperBar{
+	padding: 5px 0;
+}
+div.upperBar{
+	padding: 5px 0;
+}
+div.partition p{
+	display: -webkit-flex;
+	display:         flex;
+	-webkit-justify-content:space-between;
+	justify-content:space-between;
+	margin: 2%;
+}
+span.count{
+	float: right;
+	font-weight: bold;
+	font-size: 1.6em;
+	padding: 0 0 0 4px;
+}
+div.node_tableInfo div.footer{
+	background-color: #0F6698;
+	height: 2.4em;
+	padding: 0.4em;
+	margin: 0;
+	vertical-align: middle;
+}
+div.footer span.tableNum{
+	float: left;
+	font-size: 2em;
+	font-weight: bold;
+	color: #EAE160;
+	padding: 0.2em;
+	border: 3px solid #EAE160;
+}
+div.footer span.price{
+	float: right;
+	font-size: 1.5em;
+	vertical-align: middle;
+	color: white;
+}
+
+div.OrderWindow{
+	display: -webkit-flex;
+	display:         flex;
+	-webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+	position: fixed;
+	top:0;
+	bottom: 0;
+	z-index: 2;
+	margin: 0 20%;
+	width: 60%;
+	height: auto;
+	transition: height 0.5s;
+	background-color: #BFBFBF;
+	border: 1px solid #e00;
+	box-shadow:rgba(0, 0, 0, 0.3) 0 16px 16px 0;
+	-webkit-box-shadow:rgba(0, 0, 0, 0.3) 0 16px 16px 0;
+	-moz-box-shadow:rgba(0, 0, 0, 0.3) 0 16px 16px 0;
+}
+div.OrderWindow header{
+	display: -webkit-flex;
+	display:         flex;
+	-webkit-align-items: center;
+	align-items: center;
+	-webkit-justify-content:space-between;
+	justify-content:space-between;
+	border: 1px solid #eeeeee;
+	margin-bottom: auto;
+}
+div.OrderWindow header span{
+	font-size: 5.5em;
+	font-family: "나눔명조";
+	color: #00aeef;
+}
+div.OrderWindow div.nonheader{
+	display: -webkit-flex;
+	display:         flex;
+	width: 100%;
+	height: 80%;
+	background-color: #aaaaaa;
+}
+div.OrderWindow article{
+	flex:2.3;
+	-webkit-flex:2.3;
+	//background-color: #87eebb;
+	height: 100%;
+	overflow:scroll;
+	overflow-x: hidden;
+	padding: 4px;
+	//border: 10px solid black;
+}
+div.OrderWindow article p{
+	display: -webkit-flex;
+	display:         flex;
+	-webkit-justify-content:space-between;
+	justify-content:space-between;
+	-webkit-align-items: center;
+	align-items: center;
+	font-size: 1.2em;
+	background-color: #ffffff;
+	color: black;
+	padding: 0.6em;
+	margin:0;
+	border: 1px solid #888888;
+}
+div.OrderWindow aside{
+	flex:1;
+	-webkit-flex:1;
+	//background-color: #55bbbb;
+    overflow:scroll;
+	border: 1px solid #ffffff;
+	padding: 4px;
+}
+div.OrderWindow aside p{
+	display: -webkit-flex;
+	display:         flex;
+	-webkit-justify-content:space-between;
+	justify-content:space-between;
+	-webkit-align-items: center;
+	align-items: center;
+	font-size: 1.2em;
+	background-color: #999999;
+	color: white;
+	padding: 0.6em;
+	margin:0;
+	border: 1px solid white;
+}
+
+div.PayWindow{
+	z-index: 1;
+	background-color: #ffffff;
+	display: -webkit-flex;
+ 	display:         flex;
+	position: fixed;
+	width: 60%;
+    //height: 0;
+	margin: 0 20%;
+	transition: height 0.5s;
+	border: 10px solid salmon;
+	-webkit-flex-direction: column;
+    flex-direction: column;
+}
+div.PayWindow section{
+	width: 100%;
+	height: 50%;
+	display: -webkit-flex;
+ 	display:         flex;
+	 -webkit-justify-content: center;
+    justify-content: center;
+}
+div.PayWindow *{
+	-webkit-align-items: center;
+    align-items: center;
+	font-family: "나눔고딕", "맑은고딕";
+}
+div.PayWindow p{
+	font-size: 2.4em;
+	font-weight: bold;
+}
+div.PayWindow div.upperBar{
+	padding: 5px 0;
+}
+div.PayWindow form{
+	width: 60%;
+	height: 60px;
+	font-size: 2.0em;
+}
+div.PayWindow form input[type="number"]{
+	padding: 10px;
+	border: solid 5px #c9c9c9;
+	transition: box-shadow 0.3s, border 0.3s, width 0.3s;
+	-moz-appearance:textfield;
+	width: 20%;
+}
+div.PayWindow form input[type="number"]:focus{
+	border: solid 5px #969696;
+	width: 40%;
+}
+div.PayWindow form input{
+	font-size: 0.8em;
+}
+
+header div.windowButton{
+	display: -webkit-flex;
+ 	display:         flex;
+	  -webkit-justify-content: center;
+    justify-content: center;
+	-webkit-align-items: center;
+    align-items: center;
+	float: right;
+	width: 160px;
+	height: 120px;
+	background-color: white;
+	border: 5px solid #0F6698;
+	margin: 5px 20px;
+}
+div.windowButton p{
+	font-weight: bold;
+	font-size: 2.2em;
+	color: #fcb746;
+}
+div.windowButton p:hover{
+	color: red;
+}
+
+div.selectTableNum{
+    position: fixed;
+    top:50px;
+    width:75%;
+    display:block;
+    margin:  140px 12.5%;
+    overflow:hidden;
+   background-color: white;
+   border: 5px solid #55bbbb;
+}
+div.tableNode{
+   background-color: white;
+    float: left;
+   border: 5px solid #0F6698;
+   margin: 5px 0.5%;
+   width: 19%;
+   height: 60px;
+   text-align: center;
+   font-weight: bold;
+   font-size: 2.2em;
+   color: #fcb746;
+}
+
+.green{
+	background-color: #87eebb;
+}
+.blue{
+	background-color: #55bbbb;
+}
+.orange{
+	background-color: #fcb746;
+}
+.red{
+	background-color: #ee4455;
+}
+.new{
+	background-color: #EAE160;
+}
+.new:hover{
+	background-color: #ffffff;
+	-webkit-transition: all 0.2s ease;
+ 	-moz-transition: all 0.2s ease;
+	-o-transition: all 0.2s ease;
+	transition: all 0.2s ease;
+}
+.old{
+	background-color: #ffffff;
+}

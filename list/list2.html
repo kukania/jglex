@@ -1,0 +1,563 @@
+﻿ <!DOCTYPE html>
+<html>
+<head>
+	<meta charset=utf-8>
+	<link rel="stylesheet" href="MyCSS2.css">
+	<link rel="stylesheet" href="magnific-popup.css">
+  <style>
+	</style>
+  <script src="menuPageController.js"></script>
+ 	<script src="jquery-1.11.3.min.js"> </script>
+  <script src="magnific-popup.js"></script>
+  <script>
+  	 Array.prototype.remove = function() {
+    var what, a = arguments, L = a.length, ax;
+    while (L && this.length) {
+        what = a[--L].value;
+        var i;
+        for(i=0; i<a.length; i++){
+        	if(a[i].value==what){
+        		this.splice(i,1);
+        		break;
+        		}
+        	}
+        }
+    return this;
+    }
+	var order=new Array();
+   	$(document).ready(function(){
+   		/*
+			menu setting!!
+   		*/
+   		var manu='#menu';
+   		for(var i=1; i<20+1; i++){
+   			$(''+manu+i).magnificPopup({
+   				type:'image',
+   				delegate:'a',
+   				gallery: {
+      				enabled: true
+    			}
+   			});
+   		}
+   		$('.checkBag').magnificPopup({
+   			type:'inline',
+   			midClick: true
+   		})
+   });
+   	function doOrder(path){
+   	    tableNum = prompt("테이블 번호를 입력하세요:");
+   	    document.cookie = "tableNum=" + tableNum;
+   	    var method = "post";
+   	    var form = document.createElement("form");
+   	    form.setAttribute("method", method);
+   	    var url = path + "?length=" + order.length + "&tableNum=" + tableNum;
+   	    form.setAttribute("action", url);
+
+   	    for (var key = 0; key < order.length; key++) {
+   	        var hiddenField1 = document.createElement("input");
+   	        hiddenField1.setAttribute("type", "hidden");
+   	        var manu = "manu" + key;
+   	       
+   	        hiddenField1.setAttribute("name", manu);
+   	        hiddenField1.setAttribute("value", order[key].value);
+
+   	        form.appendChild(hiddenField1);
+
+   	        var hiddenField2 = document.createElement("input");
+   	        hiddenField2.setAttribute("type", "hidden");
+   	        var manuMany = "many" + key;
+   	        hiddenField2.setAttribute("name", manuMany);
+   	        hiddenField2.setAttribute("value", order[key].many);
+   	        form.appendChild(hiddenField2);
+   	    }
+   	    document.body.appendChild(form);
+   	    form.submit();
+   	}
+   </script>
+   <script>
+   function orderSet(chkbox){
+   	if(chkbox.checked==true){
+   			$(chkbox).parent().append('<div><input type="number" style="width:30px" min="0" value=0>인분<button type="submit" onClick="test(this,true)" value="">주문하기</button></div>');
+   			$(chkbox).parent().children('div').children('button').val($(chkbox).val());
+   		}
+   		else{
+   			$(chkbox).parent().children().eq(2).remove();
+   		}
+   }
+   	function test(btn, type){
+   		var temp={};
+   		temp.value=btn.value;
+   		temp.many=$(btn).parent().children().eq(0).val();
+   		if(type==true){
+   			alert(temp.value+" "+temp.many+"개 장바구니에 넣었습니다!");
+   			order.push(temp);
+   			$(btn).parent().append('<button onClick="test(this,false)">주문 빼기</button>')
+   			$(btn).parent().children().eq(2).val(temp.value);
+   			$(btn).parent().children().eq(1).remove();
+   		}
+   		else{
+   			alert(temp.value+"를 장바구니에 뺐습니다!");
+   			order.remove(temp);
+   			$(btn).parent().parent().children('input').attr("checked",false);
+   			$(btn).parent().remove();
+   		}
+   		$('#checkBagDiv').contents().remove();
+   		for(var i in order){
+   			if(i!="remove"){
+   			$('#checkBagDiv').append('<p>'+order[i].value+" "+order[i].many+' 개</p>');
+   			}
+   		}	
+   }
+   </script>
+    <script>
+       function checkOrder() {
+           if (tableNum == null) {
+               tableNum=prompt("테이블 번호를 입력해 주세요:")
+           }
+           location.href="order_infoget(guest).php?tableNum=" + tableNum;
+       }
+    </script>
+</head>
+
+<body onload="showTap(1);">
+
+<div id="header">
+  <h1 class="title">good day, dark gal bi</h1>
+  <p style="color:white">두 닭갈비?</p>
+</div>
+
+<div id="nav">
+    <ul id="tab_list">
+      <li class="tab">
+      <button onclick="showTap(1);">
+        <p>닭요리</p>
+        <div class="selected" id="underbar1"></div>
+      </button>
+      </li>
+      <li class="tab">
+      <button onclick="showTap(2);">
+        <p>사리</p>
+        <div class="selected" id="underbar2"></div>
+      </button>
+      </li>
+      <li class="tab">
+      <button onclick="showTap(3);">
+        <p>음료</p>
+        <div class="selected" id="underbar3"></div>
+      </button>
+      </li>
+      <li class="tab">
+      <button onclick="showTap(4);">
+        <p>기타</p>
+        <div class="selected" id="underbar4"></div>
+      </button>
+      </li>
+    </ul>
+  </div>
+<!-- 
+			<div class="inner"id="menu1">
+					<a  href="food_1.jpg">
+						<div class="img">
+							<img src="food1.jpg">
+						</div>
+						</a>
+						<span class="txt">
+						<span class="in">
+								짱짱존맛^^
+								<br/>
+							<input type="checkbox" name="menu" value="닭갈비1" <-값변경 onClick="orderSet(this);">
+              닭갈비1
+						</span>
+						</span>
+				</div>
+-->
+<div class="wrap">
+  <div class="container" id="tab1">
+    <div class="thumbnail-area">
+      <section class="list">
+        <div class="inner" id="menu1">
+          <a href="food_1.jpg">
+            <div class="img">
+              <img src="food1.jpg">
+            </div>
+          </a>
+          <a href="food_1.jpg"></a>
+          <span class="txt">
+            <span class="in">
+              1인분 220g 8,000원 (3636원/100g)
+              <br/>
+              <input type="checkbox" name="menu" value="좋은 날엔 닭갈비"  onClick="orderSet(this);">
+              좋은 날엔 닭갈비
+            </span>
+          </span>
+        </div>
+      
+        <div class="inner" id="menu2">
+          <a href="food2.jpg">
+            <div class="img">
+              <img src="food2.jpg">
+            </div>
+          </a>
+          <span class="txt">
+            <span class="in">
+              1인분 200g+닭요리 선택 1종 8,500원 (3696원/100g)
+              <br/>
+              <input type="checkbox" name="menu" value="닭갈비+1"  onClick="orderSet(this);">
+              닭갈비+1
+            </span>
+          </span>
+        </div>
+      </section>
+
+      <section class="list">
+        <div class="inner" id="menu3">
+          <a href="food3.jpg">
+            <div class="img">
+              <img src="food3.jpg">
+            </div>
+          </a>
+          <span class="txt">
+            <span class="in">
+              1인분 200g+닭요리 선택 2종 9,000원 (3333원/100g)
+              <br/>
+              <input type="checkbox" name="menu" value="닭갈비 정식"  onClick="orderSet(this);">
+              닭갈비 정식
+            </span>
+          </span>
+        </div>
+      
+        <div class="inner" id="menu4">
+          <a href="food1.jpg">
+            <div class="img">
+              <img src="food1.jpg">
+            </div>
+          </a>
+          <span class="txt">
+            <span class="in">
+              1인분 250g/반찬 미제공 8,000원 (3200원/100g)
+              <br/>
+              <input type="checkbox" name="menu" value="닭갈비 포장(생닭)"  onClick="orderSet(this);">
+              닭갈비 포장(생닭)
+            </span>
+          </span>
+        </div>
+      </section>
+
+      <section class="list">
+        <div class="inner" id="menu5">
+          <a href="food2.jpg">
+            <div class="img">
+              <img src="food2.jpg">
+            </div>
+          </a>
+          <span class="txt">
+            <span class="in">
+              1인분 220g+닭요리 선택 2종 8,000원 (3636원/100g)
+              <br/>
+              <input type="checkbox" name="menu" value="닭갈비 포장(조리된)"  onClick="orderSet(this);">
+              닭갈비 포장(조리된)
+            </span>
+          </span>
+        </div>
+      
+        <div class="inner" id="menu6">
+          <a href="food2.jpg">
+            <div class="img">
+              <img src="food2.jpg">
+            </div>
+          </a>
+          <span class="txt">
+            <span class="in">
+              튀김 2조각(생닭 약 120g) 7,000원 (5833원/100g)
+              <br/>
+              <input type="checkbox" name="menu" value="허브 치킨가스"  onClick="orderSet(this);">
+              허브 치킨가스
+            </span>
+          </span>
+        </div>
+      </section>
+
+      <section class="list">
+        <div class="inner" id="menu7">
+          <a href="food2.jpg">
+            <div class="img">
+              <img src="food2.jpg">
+            </div>
+          </a>
+          <span class="txt">
+            <span class="in">
+              가슴살 1.3개(생닭 약 160g) 9,000원 (5625원/100g)
+              <br/>
+              <input type="checkbox" name="menu" value="닭가슴살 냉채"  onClick="orderSet(this);">
+              닭가슴살 냉채
+            </span>
+          </span>
+        </div>
+      
+        <div class="inner" id="menu8">
+          <a href="food2.jpg">
+            <div class="img">
+              <img src="food2.jpg">
+            </div>
+          </a>
+          <span class="txt">
+            <span class="in">
+              튀김 1조각(생닭 약 60g) 3,800원 (6333원/100g)
+              <br/>
+              <input type="checkbox" name="menu" value="어린이 치킨가스"  onClick="orderSet(this);">
+              어린이 치킨가스
+            </span>
+          </span>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="container" id="tab2">
+    <div class="thumbnail-area">
+      <section class="list">
+        <div class="inner" id="menu9">
+          <a href="food1.jpg">
+            <div class="img">
+              <img src="food1.jpg">
+            </div>
+          </a>
+          <span class="txt">
+            <span class="in">
+              우동사리+떡+고구마 3,000원
+              <br/>
+              <input type="checkbox" name="menu" value="모둠 사리" onClick="orderSet(this);">
+              모둠 사리
+            </span>
+          </span>
+        </div>
+      
+        <div class="inner" id="menu10">
+          <a href="food2.jpg">
+            <div class="img">
+              <img src="food2.jpg">
+            </div>
+          </a>
+          <span class="txt">
+            <span class="in">
+              오뚜기/풀무원 2,000원
+              <input type="checkbox" name="menu" value="우동 사리" onClick="orderSet(this);">
+              우동 사리
+            </span>
+          </span>
+        </div>
+      </section>
+
+      <section class="list">
+        <div class="inner" id="menu11">
+          <a href="food1.jpg">
+            <div class="img">
+              <img src="food1.jpg">
+            </div>
+          </a>
+          <span class="txt">
+            <span class="in">
+              삼양/오뚜기/팔도 1,500원
+              <input type="checkbox" name="menu" value="라면 사리" onClick="orderSet(this);">
+              라면 사리
+            </span>
+          </span>
+        </div>
+      
+        <div class="inner" id="menu12">
+          <a href="food2.jpg">
+            <div class="img">
+              <img src="food2.jpg">
+            </div>
+          </a>
+          <span class="txt">
+            <span class="in">
+              1,500원
+              <input type="checkbox" name="menu" value="떡사리" onClick="orderSet(this);">
+              떡사리
+            </span>
+          </span>
+        </div>
+      </section>
+
+      <section class="list">
+        <div class="inner" id="menu13">
+          <a href="food1.jpg">
+            <div class="img">
+              <img src="food1.jpg">
+            </div>
+          </a>
+          <span class="txt">
+            <span class="in">
+              1,500원
+              <input type="checkbox" name="menu" value="고구마사리" onClick="orderSet(this);">
+              고구마사리
+            </span>
+          </span>
+        </div>
+      
+        <div class="inner">
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="container" id="tab3">
+    <div class="thumbnail-area">
+      <section class="list">
+        <div class="inner" id="menu14">
+          <a href="food1.jpg">
+            <div class="img">
+              <img src="food1.jpg">
+            </div>
+          </a>
+          <span class="txt">
+            <span class="in">
+              4,000원
+              <br/>
+              <input type="checkbox" name="menu" value="소주/맥주" onClick="orderSet(this);">
+              소주/맥주
+            </span>
+          </span>
+        </div>
+      
+        <div class="inner" id="menu15">
+          <a href="food2.jpg">
+            <div class="img">
+              <img src="food2.jpg">
+            </div>
+          </a>
+          <span class="txt">
+            <span class="in">
+              3,500원
+              <br/>
+              <input type="checkbox" name="menu" value="막걸리" onClick="orderSet(this);">
+              막걸리
+            </span>
+          </span>
+        </div>
+      </section>
+
+      <section class="list">
+        <div class="inner" id="menu16">
+          <a href="food1.jpg">
+            <div class="img">
+              <img src="food1.jpg">
+            </div>
+          </a>
+          <span class="txt">
+            <span class="in">
+              4,500원
+              <br/>
+              <input type="checkbox" name="menu" value="청하" onClick="orderSet(this);">
+              청하
+            </span>
+          </span>
+        </div>
+      
+        <div class="inner" id="menu17">
+          <a href="food2.jpg">
+            <div class="img">
+              <img src="food2.jpg">
+            </div>
+          </a>
+          <span class="txt">
+            <span class="in">
+              1,200원
+              <br/>
+              <input type="checkbox" name="menu" value="음료수" onClick="orderSet(this);">
+              음료수
+            </span>
+          </span>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="container" id="tab4">
+    <div class="thumbnail-area">
+      <section class="list">
+        <div class="inner" id="menu18">
+          <a href="food1.jpg">
+            <div class="img">
+              <img src="food1.jpg">
+            </div>
+          </a>
+          <span class="txt">
+            <span class="in">
+              (닭갈비와 연결 주문시) 2,000원
+              <br/>
+              <input type="checkbox" name="menu" value="볶음밥" onClick="orderSet(this);">
+              볶음밥
+            </span>
+          </span>
+        </div>
+      
+        <div class="inner" id="menu19">
+          <a href="food2.jpg">
+            <div class="img">
+              <img src="food2.jpg">
+            </div>
+          </a>
+          <span class="txt">
+            <span class="in">
+              국내산 쌀 1,000원
+              <br/>
+              <input type="checkbox" name="menu" value="공기밥" onClick="orderSet(this);">
+              공기밥
+            </span>
+          </span>
+        </div>
+      </section>
+
+      <section class="list">
+        <div class="inner" id="menu20">
+          <a href="food1.jpg">
+            <div class="img">
+              <img src="food1.jpg">
+            </div>
+          </a>
+          <span class="txt">
+            <span class="in">
+              양배추채+드레싱+토핑3종 1,500원
+              <br/>
+              <input type="checkbox" name="menu" value="양배추 샐러드" onClick="orderSet(this);">
+              양배추 샐러드
+            </span>
+          </span>
+        </div>
+      
+        <div class="inner">
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+<!-- end of wrap-->
+
+<footer>
+  <ul id="tab_list">
+    <li class="tab" onClick="doOrder('getOrder.php');"><a>
+    <p>주문하기</p>
+    </a></li>
+    <li class="tab"><a href="#checkBagDiv" class="checkBag">
+    <p>장바구니</p>
+    </a></li>
+     <li class="tab" onClick="checkOrder()">
+    <a href="OrderInfo.html"><p>주문정보</p></a>
+    </li>
+  </ul>
+  <div id="checkBagDiv" class="white-popup mfp-hide"></div>
+</footer>
+<!-- js
+<footer>
+	<ul id="tab_list">
+		<li class="tab" onClick="doOrder('getOrder.php');">주문 하기</a></li>
+		<li class="tab"><a href="#checkBagDiv" class="checkBag">장바구니</a></li>
+		<li class="tab" >주문정보</li>
+	</ul>
+	<div id="checkBagDiv" class="white-popup mfp-hide"></div>
+</footer>
+-->
+</body>
+</html>

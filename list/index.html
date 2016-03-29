@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset=utf-8>
+	<link rel="stylesheet" href="index_legacy.css">
+	<link rel="stylesheet" href="index_neo.css">
+	<link rel="stylesheet" href="Index_fullscreen.css">
+	<link rel="stylesheet" href="magnific-popup.css">
+	<script src="menuPageController.js"></script>
+ 	<script src="jquery-1.11.3.min.js"> </script>
+ 	<script src="magnific-popup.js"></script>
+ 	<!-- script by PM -->
+	<!-- script for fullscren and events -->
+	<script type="text/javascript">
+	// state variables
+	var name_page = '';
+	var name_window = '';
+	var set_list=[];
+	// functions to get html source 
+	function get_fs_title(){
+		return '<div class="title"><button onclick="get_page(' + "'prev'" + ')" style="float:left"><img class="fs_btn" src="./resources/icon_back.png" /></button><button onclick="off_window(' + "'recommend'" + ')" style="float:right"><img class="fs_btn" src="./resources/icon_close.png" /></button></div>';
+	}
+	function get_fs_body_hc(){
+		var ret = '';
+		var keyword = ['male', 'female', 'kid'];
+		ret += '<div class="body"><h3 class="fs_prompt">인원수를 입력해주세요</h3><form id="hc_form">';
+		for ( var i=0, k; i < keyword.length; i++ ){
+			k = keyword[i];
+			ret += '<article class="hc_item"><label for="hc_'+k+'"><h4>'+k+'</h4><img class="fs_icon" src="./resources/icon_'+k+'.png" /><input type="text" name="hc_'+k+'" id="hc_'+k+'" pattern="\d*" maxlength="2" size="1" value="0"><span>명</span></label></article>'
+		}
+		ret += '</form></div><div class="foot"><button onclick="send_hc();"><span>검색</span><img src="./resources/icon_search.png"></button></div>';
+		return ret;
+	}
+	function get_fs_body_sl(){
+		console.log(1);
+		var ret = '';
+		/*set_list = [{name:"어쩌고 세트", price:"20,000원", comp:"좋은 날엔 닭갈비 2인분 + 소주 1병", msg:"연인에게 추천! 개꿀 조합!!"},
+						{name:"베리굿 세트", price:"쌉니다요", comp:"푸짐해욧", msg:"개꿀이에욧!!"},
+						{name:"연인세트", price:"몰라 ㅡㅡ", comp:"알게뭐야", msg:"노답커플충"},
+						{},{},{},{},{},{},{},{},{},{name:"final"}];*/
+						
+		ret += '<div class="body"><h3 class="fs_prompt">추천된 메뉴 구성입니다</h3>';
+		ret += '<div class="sl">';
+		console.log("set_list: "+set_list);
+		for( var i=0, s; i < set_list.length; i++){
+			s = set_list[i];
+			ret += '<article class="sl_item" onclick="get_page('+"'next'"+');">';
+			ret += '<h4 class="sl_name">' +		s['name']	+ '</h4>';
+			ret += '<span class="sl_price">' +	s['price']	+ '</span>';
+			ret += '<span class="sl_comp">' +	s['comp']	+ '</span>';
+			ret += '<span class="sl_msg">' +	s['msg']	+ '</span>';
+			ret += '</article>';
+		}
+		ret += '</div></div>';
+		return ret;
+	}
+	function get_fs_body_cf(){
+		var ret = '';
+		var selected = {name:"선택된 세트", price: "세트의 가격", comp: "세트의 구성 요소", msg: "세트에 대한 주석, 메세지"};
+		ret += '<div class="body"><h3 class="fs_prompt">장바구니에 넣기</h3>';
+		ret += '<article class="info">';
+		ret += '<h4 class="if_name">' +		selected['name']	+ '</h4>';
+		ret += '<span class="if_price">' +	selected['price']	+ '</span>';
+		ret += '<span class="if_comp">' +	selected['comp']	+ '</span>';
+		ret += '<span class="if_msg">' +	selected['msg']		+ '</span>';
+		ret += '</article>';
+		ret += '</div><div class="foot"><h3 class="fs_prompt" style="margin-top:-114px;">장바구니에 넣으시겠습니까?</h3><button onclick="off_window('+"'recommend'"+')"><span>확인</span><img src="./resources/icon_check.png"></button></div>';
+		return ret;
+	}
+	function on_window(name){
+		console.log("on_window()" + name);
+		name_window = name;
+		$('#'+name_window).css("display", "block");
+		set_page('hc');
+	}
+	function off_window(name){
+		console.log("off_window()" + name);
+		$('#'+name).css("display", "none");
+	}
+	function set_page(name){
+		name_page = name;
+		console.log("set_page()" + name_page);
+		var temp = '';
+		if		(name_page == 'hc') { temp = get_fs_body_hc(); }
+		else if (name_page == 'sl') { temp = get_fs_body_sl(); }
+		else if (name_page == 'cf') { temp = get_fs_body_cf(); }
+		$('#'+name_window).html(get_fs_title() + temp);
+	}
+	function get_page(command){
+		if 		(command == "next") {
+			if 		(name_page == "hc") set_page("sl");
+			else if (name_page == "sl") set_page("cf");
+		}
+		else if (command == "prev") {
+			if 		(name_page == "sl") set_page("hc");
+			else if (name_page == "cf") set_page("sl");
+		}
+	}
+	function send_hc(){
+		var formData = $("#hc_form").serialize();
+		console.log("recommend_set.php?"+formData);
+		$.ajax({
+			url: "recommend_set.php?"+formData,
+			type: "GET",
+			dataType: "JSON",
+			success: function(data){
+				console.log(data);
+				set_list = data;
+				console.log(set_list);
+				console.log("sl len: "+set_list.length);
+				get_page('next');
+			}
+		})
+	}
+	</script>
+	<!-- scripts for number spinner-->
+	<script>
+	(function($) {
+		$.fn.spinner = function() {
+			this.each(function() {
+				var el = $(this);
+			
+				// add elements
+				el.wrap('<span class="spinner"></span>');     
+				el.before('<span class="sub">-</span>');
+				el.after('<span class="add">+</span>');
+				
+				// substract
+				el.parent().on('click', '.sub', function () {
+					if (el.val() > parseInt(el.attr('min')))
+					el.val( function(i, oldval) { return --oldval; });
+				});
+				
+				// increment
+				el.parent().on('click', '.add', function () {
+					if (el.val() < parseInt(el.attr('max')))
+					el.val( function(i, oldval) { return ++oldval; });
+				});
+		    });
+		};
+	})(jQuery);
+	
+	$('input[type=number]').spinner();
+	</script>
+	<!-- End of scripts by PM -->
+	<!-- scripts by js -->
+ 	<script>
+	var order=new Array();
+   	$(document).ready(function(){
+   		/*
+			menu setting!!
+   		*/
+   });
+   </script>
+  	<script>
+   	function makeColorBox(){
+   		var manu='#menu';
+   		for(var i=1; i<20+1; i++){
+   			$(''+manu+i).magnificPopup({
+   				type:'image',
+   				delegate:'a',
+   				gallery: {
+      				enabled: true
+    			},
+   			});
+   		}
+   		$('.checkBag').magnificPopup({
+   			type:'inline',
+   			midClick: true
+   		})
+   	}
+   </script>
+   	<script>
+       function checkOrder() {
+           if (tableNum == null) {
+               tableNum=prompt("테이블 번호를 입력해 주세요:")
+           }
+           location.href="order_infoget(guest).php?tableNum=" + tableNum;
+       }
+    </script>
+    <script>
+    	function up(temp){
+			var value=parseInt($("#menuValue"+temp).html());
+			$("#menuValue"+temp).html(value+1);
+		}
+		function down(temp){
+			var value=parseInt($("#menuValue"+temp).html());
+			$("#menuValue"+temp).html(value-1);
+		}
+    </script>
+   	<script>
+   	//폴카야 봐라 이것이 메뉴 하나를 구성하는 코드다.
+    	function getCategoryMenu(input){
+    		$.ajax({
+                type: "GET",
+                url: "getMenuData.php?category="+input,
+                dataType: "JSON",
+                success:function(data){
+                	$(".container").attr("id","tab"+input);
+                	$(".thumbnail-area").html("");
+                	var i=0;
+                	var temp=1;
+                	for(var key in data){
+                		if(i==data.length)
+                			break;
+                		if(i%2==0){
+                			$(".thumbnail-area").append("<section class='list'></section>");
+                		}
+                		$("section").last().append("<div class='inner' id='menu"+(temp)+"'></div>");
+                		$("#menu"+(i+1)).append("<div class='mc' id='mc"+(temp)+"' style='display:none'><button onclick='up("+(temp)+")'>+</button><button onclick='test(this,true)' id='btn"+(temp)+"'value='"+data[key]['name']+"' class='mc_command'>주문하기</button><span id='menuValue"+(temp)+"'>0</span><button onclick='down("+(temp)+")'>-</button></div>")
+                		$("#menu"+(i+1)).append("<a href=../Calculate3/imageFile/"+data[key]['imagename_1']+"><div><img src=../Calculate3/imageFile/"+data[key]['imagename_1']+"></div></a>");
+                		$("#menu"+(i+1)).append("<a href=../Calculate3/imageFile/"+data[key]['imagename_2']+"></a");
+                		$("#menu"+(i+1)).append("<a href=../Calculate3/imageFile/"+data[key]['imagename_3']+"></a");
+                		$("#menu"+(i+1)).append("<span class='txt'><span class='in'>"+data[key]['price']+"<br/>"+'<input type="checkbox" id="checkboxbtn'+temp+'" name="menu" value="'+data[key]['name']+'" onclick="orderSet(this,'+temp+');">'+data[key]['name']+"</span></span>");
+                		//폴카야 봐라  버튼을 이 아래에 추가한 것이다.
+                		i++;
+                		temp++;
+                	}
+                	makeColorBox();
+                },
+                error:function (xhr, status, error) {
+                    alert(error);
+                }
+    		})
+    	}
+    </script>
+    <!-- end of js -->
+</head>
+	<body onload="getCategoryMenu(1);">
+		<header>
+  			<h1 class="title">좋은 날엔 닭갈비</h1>
+  			<p>주문 페이지</p>
+		</header>
+		<nav>
+    		<ul id="tab_list">
+      			<li class="tab">
+      				<button onclick="getCategoryMenu(1);" style="border-color:#55bbbb">
+        				<p>닭요리</p>
+      				</button>
+      			</li>
+      			<li class="tab">
+      				<button onclick="getCategoryMenu(2);" style="border-color:#fcb746">
+        				<p>사리</p>
+      				</button>
+      			</li>
+      			<li class="tab">
+      				<button onclick="getCategoryMenu(3);" style="border-color:#87eebb">
+        				<p>음료</p>
+      				</button>
+      			</li>
+      			<li class="tab">
+      				<button onclick="getCategoryMenu(4);" style="border-color:#ee4455">
+        				<p>기타</p>
+      				</button>
+      			</li>
+    		</ul>
+  		</nav>
+  		
+  		<div class="event">
+  			<button onclick="on_window('recommend')">
+  				<span>추천받<br>으실?</span>
+  			</button>
+  		</div>
+   		<div class="container">
+    		<div class="thumbnail-area">
+    		</div>
+  		</div>
+  		<div id="recommend" class="fullscreen">
+  		</div>
+  		<footer>
+  			<ul id="tab_list">
+    			<li class="tab" onClick="doOrder('getOrder.php');"><a>
+    			<p>주문하기</p>
+    			</a></li>
+    			<li class="tab"><a href="#checkBagDiv" class="checkBag">
+   				<p>장바구니</p>
+    			</a></li>
+    			<li class="tab" onClick="checkOrder()">
+    			<a href="OrderInfo.html"><p>주문정보</p></a>
+    			</li>
+  			</ul>
+  			<div id="checkBagDiv" class="white-popup mfp-hide"></div>
+		</footer>
+	</body>
+</html>
